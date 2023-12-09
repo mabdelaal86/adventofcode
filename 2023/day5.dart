@@ -83,7 +83,7 @@ int mapValue(int value, List<Range> maps) => maps
     .firstOrNull?.map(value) ?? value;
 
 Future<void> main() async {
-  data = await getData("data/day5.txt").toList();
+  data = await getData().toList();
   // data = example.split("\n");
   // for (final item in data) print(item);
 

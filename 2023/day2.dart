@@ -1,15 +1,8 @@
-import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
 import 'common.dart';
 
 final bag = {"red": 12, "green": 13, "blue": 14};
-
-Stream<String> getData() => File("data/day2.txt")
-    .openRead()
-    .transform(utf8.decoder)
-    .transform(LineSplitter());
 
 // Stream<String> getData() => Stream.fromIterable([
 //     "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green",

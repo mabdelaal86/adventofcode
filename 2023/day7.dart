@@ -46,7 +46,7 @@ class Hand implements Comparable<Hand> {
 }
 
 Future<void> main() async {
-  data = await getData("data/day7.txt").toList();
+  data = await getData().toList();
   // data = example.split("\n");
   // for (final item in data) print(item);
 

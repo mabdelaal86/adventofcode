@@ -73,7 +73,7 @@ int part2() {
 }
 
 Future<void> main() async {
-  data = await getData("data/day8.txt").toList();
+  data = await getData().toList();
   // data = example1.split("\n");
   // data = example2.split("\n");
   // data = example3.split("\n");

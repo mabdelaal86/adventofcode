@@ -16,7 +16,7 @@ List<int> toNums(String line) => line
 List<int> steps(List<int> values) => values
     .indexed.skip(1)
     .map((e) => e.$2 - values[e.$1 - 1])
-    .toList(); //.echo()
+    .toList();
 
 int predictNext(List<int> values) => values.every((e) => e == 0)
     ? 0 : predictNext(steps(values)) + values.last;
@@ -25,7 +25,7 @@ int predictPrev(List<int> values) => values.every((e) => e == 0)
     ? 0 : values.first - predictPrev(steps(values));
 
 Future<void> main() async {
-  data = await getData("data/day9.txt").toList();
+  data = await getData().toList();
   // data = example.split("\n");
   
   final part1 = data.map(toNums).map(predictNext).sum();
@@ -34,6 +34,3 @@ Future<void> main() async {
   final part2 = data.map(toNums).map(predictPrev).sum();
   print(part2);
 }
-
-// part 1:
-// part 2:

@@ -1,6 +1,4 @@
 import re
-import requests
-import sys
 from pathlib import Path
 
 numbers = {
@@ -19,27 +17,8 @@ numbers = {
 rnumbers = {k[::-1]: v for k, v in numbers.items()}
 
 
-# def get_inputs() -> str:
-#     response = requests.get("https://adventofcode.com/2023/day/1/input")
-#     print(response.status_code)
-#     if response.status_code != requests.codes.ok:
-#         sys.exit("Can't get inputs")
-#     return response.text
-
-
-# def get_inputs() -> str:
-#     return """two1nine
-# eightwo
-# abcone2threexyz
-# xtwone3four
-# 4nineeightseven2
-# zoneight234
-# 7pqrstsixteen
-# """
-
-
 def get_inputs() -> str:
-    path = Path("/home/mabdelaa/Downloads/day1-input.txt")
+    path = Path("data/day1.txt")
     return path.read_text()
 
 
@@ -67,10 +46,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# 56042
-
-# 54766
-# 55362
-# 55360
-# 55358

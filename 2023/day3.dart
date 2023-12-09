@@ -22,11 +22,6 @@ final example = r"""
 
 // Stream<String> getData() => Stream.fromIterable(example.split("\n"));
 
-Stream<String> getData() => File("data/day3.txt")
-    .openRead()
-    .transform(utf8.decoder)
-    .transform(LineSplitter());
-
 Iterable<(int, int)> getSurrounding(int i, int s, int e) sync* {
   yield (i, s - 1);
   yield (i, e);

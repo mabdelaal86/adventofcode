@@ -51,7 +51,7 @@ int updateCounts(int count) {
 }
 
 Future<void> main() async {
-  data = await getData("data/day4.txt").toList();
+  data = await getData().toList();
   // data = example.split("\n");
   // for (final item in data) print(item);
 

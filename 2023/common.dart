@@ -11,14 +11,17 @@ extension IterableMath on Iterable<int> {
   int max() => this.reduce((a, b) => math.max(a, b));
 }
 
-Stream<String> getData(String path) => File(path)
+Stream<String> getData() => File("data/${getStem(Platform.script)}.txt")
     .openRead()
     .transform(utf8.decoder)
     .transform(LineSplitter());
 
+String getStem(Uri path) => path.pathSegments.last.split(".")[0];
+
 extension Echo<T> on T {
-  T echo() {
-    print(this);
+  T echo({String prefix = "", String format(T p)?}) {
+    format ??= (T p) => "$p";
+    print("$prefix${format(this)}");
     return this;
   }
 }
