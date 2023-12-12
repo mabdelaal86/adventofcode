@@ -34,8 +34,8 @@ int countWin((int, int) race) => ways(race.$1).where((e) => e > race.$2).length;
 Future<void> main() async {
   // data = example.split("\n");
   data = input.split("\n");
-  for (final item in data) print(item);
-  
+  data.printAll();
+
   final res1 = zip(parse1()).map(countWin).mul();
   print(res1);
 
@@ -45,5 +45,5 @@ Future<void> main() async {
   print(res2);
 }
 
-// part 1:
-// part 2:
+// part 1: 2756160
+// part 2: 34788142
