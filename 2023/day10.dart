@@ -74,8 +74,6 @@ Future<void> main() async {
       .where((e) => isInside(e.$2, loopPoints))
       .toList();
   print(enclosed.length);
-  // for (final item in enclosed)
-  //   print((item, data[item.$2.x].substring(0, item.$2.y)));
 }
 
 const directions = {

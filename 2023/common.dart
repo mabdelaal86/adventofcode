@@ -25,3 +25,7 @@ extension Echo<T> on T {
     return this;
   }
 }
+
+extension PrintAll<T> on Iterable<T> {
+  void printAll() => this.forEach((e) => print(e));
+}
