@@ -1,8 +1,8 @@
-import 'dart:math';
-
 import 'common.dart';
 
 late final List<String> data;
+
+final cache = <String, int>{};
 
 final example = r"""
 ???.### 1,1,3
@@ -13,76 +13,84 @@ final example = r"""
 ?###???????? 3,2,1
 """.trim();
 
-class Record {
-  final String records;
-  final List<int> groups;
-  bool get isDeterministic => !records.contains("?");
-  bool get isNotSplittable => records.contains(".");
-
-  Record(this.records, this.groups);
-  static Record parse(String row) {
-    final parts = row.split(" ");
-    return Record(parts[0], parts[1].split(",").map(int.parse).toList());
-  }
-
-  bool isMatch(String records) {
-    final matches = RegExp(r"#+").allMatches(records).map((e) => e[0]!.length).toList();
-    return matches.length == groups.length && matches.indexed.every((e) => e.$2 == groups[e.$1]);
-  }
-
-  Iterable<String> generateMatched() => generateCombinations(records).where((e) => isMatch(e));
-
-  Record unfold(int count) {
-    final unfoldRecords = List<String>.filled(count, records).join("?");
-    final unfoldGroups = Iterable.generate(count, (i) => groups)
-        .fold(Iterable<int>.empty(), (previousValue, element) => previousValue.followedBy(element))
-        .toList();
-    
-    return Record(unfoldRecords, unfoldGroups);
-  }
-  
-  Iterable<Record> split() sync* {
-    if (isNotSplittable)
-      yield this;
-    else {
-      final parts = records.split(RegExp(r"\.+"));
-
-
-    }
-  }
-}
-
 Future<void> main() async {
   data = await getData().toList();
   // data = example.split("\n");
 
-  final parsed = data.map(Record.parse).toList();
-  printMaxSum(parsed);
+  final part1 = data.map(preprocess).map(parse).map(calcCombinations).sum(); // .map(echo)
+  print(part1);
 
-  final matchedCombinations = parsed.map((e) => e.generateMatched().length);
-  print(matchedCombinations.sum());
-  
-  final unfolded = parsed.map((e) => e.unfold(5)).toList();
-  printMaxSum(unfolded);
-
-  final matchedUnfolded = unfolded.map((e) => e.generateMatched().length);
-  print(matchedUnfolded.sum());
+  final part2 = data.map(preprocess).map(unfold).map(parse).map(calcCombinations).sum(); // .map(echo)
+  print(part2);
 }
 
-void printMaxSum(List<Record> items) {
-  final allCombinations = items
-      .map((e) => "?".allMatches(e.records).length)
-      .map((e) => pow(2, e).toInt());
-  print(allCombinations.sum());
+(String, String) preprocess(String row) {
+  final parts = row.split(" ");
+  return (parts[0], parts[1]);
 }
 
-Iterable<String> generateCombinations(String records) sync* {
-  if ("?".allMatches(records).length == 0)
-    yield records;
+(String, String) unfold((String, String) record,  [int count = 5]) => (
+      List<String>.filled(count, record.$1).join("?"),
+      List<String>.filled(count, record.$2).join(","),
+  );
+
+(String, List<int>) parse((String, String) record) {
+  var readings = splitRecords(record.$1);
+  var counts = record.$2.split(",").map(int.parse).toList();
+
+  // from start
+  while (counts.isNotEmpty) {
+    if (readings.first.length == counts.first && readings.first.contains("#")) {
+      readings.removeAt(0);
+      counts.removeAt(0);
+      continue;
+    }
+    if (readings.last.length == counts.last && readings.last.contains("#")) {
+      readings.removeLast();
+      counts.removeLast();
+      continue;
+    }
+    if (readings.first.length < counts.first && !readings.first.contains("#")) { // all are ???
+      readings.removeAt(0); // all should be ...
+      continue;
+    }
+    if (readings.last.length < counts.last && !readings.last.contains("#")) { // all are ???
+      readings.removeLast(); // all should be ...
+      continue;
+    }
+
+    break;
+  }
+
+  if (readings.isEmpty) assert(counts.isEmpty);
+  if (counts.isEmpty) return ("#", [1]);
+  return (readings.join("."), counts);
+}
+
+bool isMatch(String readings, List<int> counts) {
+  final groups = splitRecords(readings);
+  return groups.length == counts.length &&
+      zip(groups.iterator, counts.iterator).every((e) => e.$1.length == e.$2);
+}
+
+int calcCombinations((String, List<int>) record) {
+  // if (cache.containsKey("$record"))
+  //   return cache["$record"]!;
+
+  int res = 0;
+  if (!record.$1.contains("?"))
+    res = isMatch(record.$1, record.$2) ? 1 : 0;
   else
-    for (final condition in const [".", "#"])
-      yield* generateCombinations(records.replaceFirst("?", condition));
+    for (final condition in const [".", "#"]) {
+      final readings = record.$1.replaceFirst("?", condition);
+      res += calcCombinations((readings, record.$2));
+    }
+    
+  // cache["$record"] = res;
+  return res;
 }
+
+List<String> splitRecords(String records) => records.replaceAll(".", " ").trim().split(spaceRe);
 
 // part 1: 7460
 // part 2:

@@ -18,6 +18,8 @@ Stream<String> getData() => File("data/${getStem(Platform.script)}.txt")
 
 String getStem(Uri path) => path.pathSegments.last.split(".")[0];
 
+T echo<T>(T obj, {String prefix = "", String format(T p)?}) => obj.echo(prefix: prefix, format: format);
+
 extension Echo<T> on T {
   T echo({String prefix = "", String format(T p)?}) {
     format ??= (T p) => "$p";
