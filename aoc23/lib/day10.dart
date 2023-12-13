@@ -142,16 +142,19 @@ Point<int> move(Point<int> pre, Point<int> cur) => adjTo(cur)
     .firstWhere((e) => e != pre);
 
 Iterable<(String, Point<int>)> getAll() sync* {
-  for (final r in data.indexed)
-    for (final c in r.$2.split('').indexed)
+  for (final r in data.indexed) {
+    for (final c in r.$2.split('').indexed) {
       yield (c.$2, Point(r.$1, c.$1));
+    }
+  }
 }
 
 final re = RegExp(r"(FJ|L7|\|)");
 
 bool isInside(Point<int> point, List<Point<int>> loopPoints) {
-  if (loopPoints.contains(point))
+  if (loopPoints.contains(point)) {
     return false;
+  }
 
   final ss = List<Point<int>>
       .generate(point.y, (i) => Point(point.x, i))

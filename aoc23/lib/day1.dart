@@ -48,11 +48,13 @@ String convert2(String line) {
   final digitMatches = firstLastDigit(line);
   final wordMatches = firstLastWord(line);
 
-  if (digitMatches.isEmpty)
+  if (digitMatches.isEmpty) {
     return wordMatches.map((m) => numbers[m[1]!]).join();
+  }
 
-  if (wordMatches.isEmpty)
+  if (wordMatches.isEmpty) {
     return digitMatches.map((m) =>m[0]!).join();
+  }
 
   final List<String> matches = [
     digitMatches.first.start < wordMatches.first.start

@@ -7,7 +7,7 @@ final example = r"""
 """.trim();
 
 Future<void> main() async {
-  // data = await getData().toList();
+  data = await getData().toList();
   data = example.split("\n");
 }
 

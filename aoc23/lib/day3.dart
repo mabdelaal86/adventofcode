@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'common.dart';
 
 late final List<String> data;
@@ -61,7 +58,6 @@ Future<void> main() async {
   data = await getData().map((e) => ".$e.").toList();
   final empty = "." * data[0].length;
   data..insert(0, empty)..add(empty);
-  // for (final item in data) print(item);
 
   final partsSum = data.indexed
       .map((e) => getPartNumbers(e.$1, e.$2))

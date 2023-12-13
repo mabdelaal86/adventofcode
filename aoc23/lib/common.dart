@@ -5,10 +5,10 @@ import 'dart:math' as math;
 final spaceRe = RegExp(r" +");
 
 extension IterableMath on Iterable<int> {
-  int sum() => this.fold(0, (a, b) => a + b);
-  int mul() => this.fold(1, (a, b) => a * b);
-  int min() => this.reduce((a, b) => math.min(a, b));
-  int max() => this.reduce((a, b) => math.max(a, b));
+  int sum() => fold(0, (a, b) => a + b);
+  int mul() => fold(1, (a, b) => a * b);
+  int min() => reduce((a, b) => math.min(a, b));
+  int max() => reduce((a, b) => math.max(a, b));
 }
 
 Stream<String> getData() => File("data/${getStem(Platform.script)}.txt")
@@ -18,10 +18,10 @@ Stream<String> getData() => File("data/${getStem(Platform.script)}.txt")
 
 String getStem(Uri path) => path.pathSegments.last.split(".")[0];
 
-T echo<T>(T obj, {String prefix = "", String format(T p)?}) => obj.echo(prefix: prefix, format: format);
+T echo<T>(T obj, {String prefix = "", String Function(T p)? format}) => obj.echo(prefix: prefix, format: format);
 
 extension Echo<T> on T {
-  T echo({String prefix = "", String format(T p)?}) {
+  T echo({String prefix = "", String Function(T p)? format}) {
     format ??= (T p) => "$p";
     print("$prefix${format(this)}");
     return this;
@@ -29,7 +29,7 @@ extension Echo<T> on T {
 }
 
 extension PrintAll<T> on Iterable<T> {
-  void printAll() => this.forEach((e) => print(e));
+  void printAll() => forEach((e) => print(e));
 }
 
 Iterable<(T, K)> zip<T, K>(Iterator<T> iter1, Iterator<K> iter2) sync* {

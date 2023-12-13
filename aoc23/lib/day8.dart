@@ -64,7 +64,9 @@ int part2() {
   while (!curNodes.every((e) => e.endsWith("Z"))) {
     // print(steps);
     final inst = instructions[steps % instructions.length];
-    curNodes.indexed.forEach((e) => curNodes[e.$1] = nodes[e.$2]![inst]);
+    for (var e in curNodes.indexed) {
+      curNodes[e.$1] = nodes[e.$2]![inst];
+    }
     // print(curNodes);
     steps += 1;
   }
@@ -80,10 +82,7 @@ Future<void> main() async {
   // for (final item in data) print(item);
 
   instructions = data[0].runes.map((e) => e == l ? 0 : 1).toList();
-  nodes = Map.fromIterable(
-      data.skip(2).map(extract),
-      key: (e) => e[0],
-      value: (e) => [e[1], e[2]]);
+  nodes = { for (var e in data.skip(2).map(extract)) e[0] : [e[1], e[2]] };
   // print(nodes);
 
   final steps1 = getSteps("AAA");

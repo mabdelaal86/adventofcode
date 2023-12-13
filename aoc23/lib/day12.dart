@@ -78,14 +78,15 @@ int calcCombinations((String, List<int>) record) {
   //   return cache["$record"]!;
 
   int res = 0;
-  if (!record.$1.contains("?"))
+  if (!record.$1.contains("?")) {
     res = isMatch(record.$1, record.$2) ? 1 : 0;
-  else
+  } else {
     for (final condition in const [".", "#"]) {
       final readings = record.$1.replaceFirst("?", condition);
       res += calcCombinations((readings, record.$2));
     }
-    
+  }
+
   // cache["$record"] = res;
   return res;
 }

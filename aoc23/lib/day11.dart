@@ -78,9 +78,11 @@ List<Point<int>> expand(int factor) => [
 ];
 
 Iterable<(Point<int>, Point<int>)> getPairs(List<Point<int>> galaxies) sync* {
-  for (final (i, galaxy1) in galaxies.indexed)
-    for (final galaxy2 in galaxies.skip(i + 1))
+  for (final (i, galaxy1) in galaxies.indexed) {
+    for (final galaxy2 in galaxies.skip(i + 1)) {
       yield (galaxy1, galaxy2);
+    }
+  }
 }
 
 int calcDistance(Point<int> a, Point<int> b) => (a.x - b.x).abs() + (a.y - b.y).abs();

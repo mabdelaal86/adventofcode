@@ -49,8 +49,11 @@ Iterable<int> getSeeds2(List<int> seeds) sync* {
   assert(seeds.length.isEven);
   late int last;
   for (final (int i, int v) in seeds.indexed) {
-    if (i.isEven) last = v;
-    else yield* Iterable.generate(v, (x) => last + x);
+    if (i.isEven) {
+      last = v;
+    } else {
+      yield* Iterable.generate(v, (x) => last + x);
+    }
   }
 }
 

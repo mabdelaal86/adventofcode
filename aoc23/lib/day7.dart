@@ -34,8 +34,9 @@ class Hand implements Comparable<Hand> {
     for (var i = 0; i < handSize; i++) {
       final c1 = cardOrder.indexOf(cards[i]),
             c2 = cardOrder.indexOf(other.cards[i]);
-      if (c1 != c2)
+      if (c1 != c2) {
         return c1.compareTo(c2);
+      }
     }
     print("Both equals");
     return 0;
