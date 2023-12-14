@@ -26,8 +26,21 @@ Future<void> main() async {
   data.printAll();
   print("=============");
 
-  final areas = groupAreas().map(processRows);
-  areas.printAll();
+  final areas = groupAreas().map(processRows).toList();
+  for (final a in areas) {
+    a.forEach((e) {
+      print(e.toRadixString(2));
+    });
+     print(".........");
+  }
+  print("----------");
+  final rev = areas.map(transpose).map((e) => e.toList()).toList();
+  for (final a in rev) {
+    a.forEach((e) {
+      print(e.toRadixString(2));
+    });
+     print(".........");
+  }
 }
 
 Iterable<List<String>> groupAreas() sync* {
@@ -43,9 +56,21 @@ Iterable<List<String>> groupAreas() sync* {
   }
 }
 
-Iterable<int> processRows(List<String> area) => area
+List<int> processRows(List<String> area) => area
     .map((e) => e.replaceAll("#", "1").replaceAll(".", "0"))
-    .map(int.parse);
+    .map((e) => int.parse(e, radix: 2))
+    .toList();
+
+Iterable<int> transpose(List<int> group) sync* {
+  final size = group.max().toRadixString(2).length;
+  for (int i = 0; i < size; i++) {
+    final shift = 1 << i;
+    yield group
+        .map((e) => e & shift).indexed
+        .map((e) => e.$2 << e.$1)
+        .sum();
+  }
+}
 
 // part 1:
 // part 2:
