@@ -21,26 +21,15 @@ final example = r"""
 """.trim();
 
 Future<void> main() async {
-  // data = await getData().toList();
-  data = example.split("\n");
-  data.printAll();
-  print("=============");
+  data = await getData().toList();
+  // data = example.split("\n");
 
-  final areas = groupAreas().map(processRows).toList();
-  for (final a in areas) {
-    a.forEach((e) {
-      print(e.toRadixString(2));
-    });
-     print(".........");
-  }
-  print("----------");
-  final rev = areas.map(transpose).map((e) => e.toList()).toList();
-  for (final a in rev) {
-    a.forEach((e) {
-      print(e.toRadixString(2));
-    });
-     print(".........");
-  }
+  final areas = groupAreas().map(processStrArea).toList();
+  final part1 = summarize(areas, findMirror);
+  print(part1);
+  
+  final part2 = summarize(areas, findSmudge);
+  print(part2);
 }
 
 Iterable<List<String>> groupAreas() sync* {
@@ -56,21 +45,61 @@ Iterable<List<String>> groupAreas() sync* {
   }
 }
 
-List<int> processRows(List<String> area) => area
+List<int> processStrArea(List<String> area) => area
     .map((e) => e.replaceAll("#", "1").replaceAll(".", "0"))
     .map((e) => int.parse(e, radix: 2))
     .toList();
 
-Iterable<int> transpose(List<int> group) sync* {
-  final size = group.max().toRadixString(2).length;
-  for (int i = 0; i < size; i++) {
-    final shift = 1 << i;
-    yield group
-        .map((e) => e & shift).indexed
-        .map((e) => e.$2 << e.$1)
-        .sum();
-  }
+List<int> transpose(List<int> group) {
+  final colsCount = group.max().toRadixString(2).length;
+  return Iterable<int>.generate(colsCount)
+      .map((i) => colsCount - i - 1)
+      .map((c) => group.indexed.map((e) => shift(e.$2, e.$1, c)).sum())
+      .toList();
 }
 
-// part 1:
-// part 2:
+int shift(int value, int row, int col) {
+  value &= 1 << col;
+  if (col > row) {
+    value >>= col - row;
+  } else {
+    value <<= row - col;
+  }
+  return value;
+}
+
+int summarize(List<List<int>> areas, int Function(List<int>) mirrorLen) {
+  final tAreas = areas.map(transpose).toList();
+  final rowMirrors = areas.map(mirrorLen);
+  final colMirrors = tAreas.map(mirrorLen);
+  return zip(rowMirrors.iterator, colMirrors.iterator)
+      .map((e) => e.$1 * 100 + e.$2)
+      .sum();
+}
+
+int findMirror(List<int> items) {
+  for (int i = 1; i < items.length; i++) {
+    final left = items.sublist(0, i).reversed;
+    final right = items.skip(i);
+    final diff = zip(left.iterator, right.iterator)
+        .map((e) => e.$1 ^ e.$2)
+        .sum();
+
+    if (diff == 0) return i;
+  }
+  return 0;
+}
+
+int findSmudge(List<int> items) {
+  for (int i = 1; i < items.length; i++) {
+    final left = items.sublist(0, i).reversed;
+    final right = items.skip(i);
+    final diff = zip(left.iterator, right.iterator)
+        .map((e) => e.$1 ^ e.$2)
+        .toList();
+    if (diff.where((e) => e != 0).singleOrNull case int z when isPowerOfTwo(z)) return i;
+  }
+  return 0;
+}
+
+bool isPowerOfTwo(int x) => (x != 0) && ((x & (x - 1)) == 0);
