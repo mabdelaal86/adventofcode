@@ -30,10 +30,32 @@ extension Echo<T> on T {
 
 extension PrintAll<T> on Iterable<T> {
   void printAll() => forEach((e) => print(e));
+
   Iterable<(T, K)> zip<K>(Iterable<K> other) sync* {
     final iter1 = iterator, iter2 = other.iterator;
     while (iter1.moveNext() && iter2.moveNext()) {
       yield (iter1.current, iter2.current);
     }
+  }
+}
+
+extension Matrix<T> on Iterable<List<T>> {
+  List<List<T>> rotate90([bool anticlockwise = false]) {
+    final iter = iterator;
+    if (!iter.moveNext()) return [];
+
+    final res = List.generate(iter.current.length, (i) => <T>[iter.current[i]]);
+
+    while (iter.moveNext()) {
+      for (final (idx, col) in iter.current.indexed) {
+        if (anticlockwise) {
+          res[res.length - idx - 1].add(col);
+        } else {
+          res[idx].insert(0, col);
+        }
+      }
+    }
+
+    return res;
   }
 }
