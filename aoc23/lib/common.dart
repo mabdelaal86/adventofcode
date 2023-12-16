@@ -30,10 +30,10 @@ extension Echo<T> on T {
 
 extension PrintAll<T> on Iterable<T> {
   void printAll() => forEach((e) => print(e));
-}
-
-Iterable<(T, K)> zip<T, K>(Iterator<T> iter1, Iterator<K> iter2) sync* {
-  while (iter1.moveNext() && iter2.moveNext()) {
-    yield (iter1.current, iter2.current);
+  Iterable<(T, K)> zip<K>(Iterable<K> other) sync* {
+    final iter1 = iterator, iter2 = other.iterator;
+    while (iter1.moveNext() && iter2.moveNext()) {
+      yield (iter1.current, iter2.current);
+    }
   }
 }

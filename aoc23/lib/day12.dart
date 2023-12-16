@@ -1,8 +1,10 @@
+import 'package:quiver/core.dart';
+
 import 'common.dart';
 
 late final List<String> data;
 
-final cache = <String, int>{};
+final cache = <(String, int), int>{};
 
 final example = r"""
 ???.### 1,1,3
@@ -20,7 +22,7 @@ Future<void> main() async {
   final part1 = data.map(preprocess).map(parse).map(calcCombinations).sum(); // .map(echo)
   print(part1);
 
-  final part2 = data.map(preprocess).map(unfold).map(parse).map(calcCombinations).sum(); // .map(echo)
+  final part2 = data.map(echo).map(preprocess).map(unfold).map(parse).map(echo).map(calcCombinations).sum(); //
   print(part2);
 }
 
@@ -38,7 +40,6 @@ Future<void> main() async {
   var readings = splitRecords(record.$1);
   var counts = record.$2.split(",").map(int.parse).toList();
 
-  // from start
   while (counts.isNotEmpty) {
     if (readings.first.length == counts.first && readings.first.contains("#")) {
       readings.removeAt(0);
@@ -70,24 +71,35 @@ Future<void> main() async {
 bool isMatch(String readings, List<int> counts) {
   final groups = splitRecords(readings);
   return groups.length == counts.length &&
-      zip(groups.iterator, counts.iterator).every((e) => e.$1.length == e.$2);
+      groups.zip(counts).every((e) => e.$1.length == e.$2);
+}
+
+bool mayMatch(String readings, List<int> counts) {
+  return splitRecords(readings)
+      .takeWhile((e) => !e.contains("?"))
+      .zip(counts)
+      .every((e) => e.$1.length == e.$2);
 }
 
 int calcCombinations((String, List<int>) record) {
-  // if (cache.containsKey("$record"))
-  //   return cache["$record"]!;
+  final recordHash = (splitRecords(record.$1).join("."), hashObjects(record.$2));
+  if (cache.containsKey(recordHash)) {
+    // print(record);
+    return cache[recordHash]!;
+  }
 
   int res = 0;
   if (!record.$1.contains("?")) {
     res = isMatch(record.$1, record.$2) ? 1 : 0;
-  } else {
-    for (final condition in const [".", "#"]) {
-      final readings = record.$1.replaceFirst("?", condition);
-      res += calcCombinations((readings, record.$2));
-    }
+  }
+  else if (mayMatch(record.$1, record.$2)) {
+    res = const [".", "#"]
+      .map((e) => record.$1.replaceFirst("?", e))
+      .map((e) => calcCombinations((e, record.$2)))
+      .sum();
   }
 
-  // cache["$record"] = res;
+  cache[recordHash] = res;
   return res;
 }
 
@@ -101,4 +113,7 @@ List<String> splitRecords(String records) => records.replaceAll(".", " ").trim()
 7460
 
 -3254662897731616768
+
+(?.?.#??????#?.????.?.#??????#?.????.?.#??????#?.????.?.#??????#?.????.?.#??????#?.??, [1, 2, 1, 2, 1, 2, 1, 2, 1, 2])
+
 */

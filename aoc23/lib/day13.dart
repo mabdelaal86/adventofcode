@@ -72,7 +72,7 @@ int summarize(List<List<int>> areas, int Function(List<int>) mirrorLen) {
   final tAreas = areas.map(transpose).toList();
   final rowMirrors = areas.map(mirrorLen);
   final colMirrors = tAreas.map(mirrorLen);
-  return zip(rowMirrors.iterator, colMirrors.iterator)
+  return rowMirrors.zip(colMirrors)
       .map((e) => e.$1 * 100 + e.$2)
       .sum();
 }
@@ -81,9 +81,7 @@ int findMirror(List<int> items) {
   for (int i = 1; i < items.length; i++) {
     final left = items.sublist(0, i).reversed;
     final right = items.skip(i);
-    final diff = zip(left.iterator, right.iterator)
-        .map((e) => e.$1 ^ e.$2)
-        .sum();
+    final diff = left.zip(right).map((e) => e.$1 ^ e.$2).sum();
 
     if (diff == 0) return i;
   }
@@ -94,9 +92,7 @@ int findSmudge(List<int> items) {
   for (int i = 1; i < items.length; i++) {
     final left = items.sublist(0, i).reversed;
     final right = items.skip(i);
-    final diff = zip(left.iterator, right.iterator)
-        .map((e) => e.$1 ^ e.$2)
-        .toList();
+    final diff = left.zip(right).map((e) => e.$1 ^ e.$2).toList();
     if (diff.where((e) => e != 0).singleOrNull case int z when isPowerOfTwo(z)) return i;
   }
   return 0;
