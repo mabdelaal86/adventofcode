@@ -2,10 +2,6 @@ import 'package:quiver/core.dart';
 
 import 'common.dart';
 
-late final List<String> data;
-
-final cache = <(String, int), int>{};
-
 final example = r"""
 ???.### 1,1,3
 .??..??...?##. 1,1,3
@@ -15,15 +11,58 @@ final example = r"""
 ?###???????? 3,2,1
 """.trim();
 
+late final List<String> data;
+final cache = <(String, int), int>{};
+
 Future<void> main() async {
   data = await getData().toList();
   // data = example.split("\n");
 
-  final part1 = data.map(preprocess).map(parse).map(calcCombinations).sum(); // .map(echo)
+  final part1 = data.map(preprocess)
+      .map(parse)
+      .map(calcCombinationsCached)
+      .sum();
   print(part1);
 
-  final part2 = data.map(echo).map(preprocess).map(unfold).map(parse).map(echo).map(calcCombinations).sum(); //
+  final part2 = data
+      .map(echo)
+      .map(preprocess)
+      .map(unfold)
+      .map(parse)
+      .map(echo)
+      .map(calcCombinationsCached)
+      .sum();
   print(part2);
+}
+
+class Record {
+  final String readings;
+  final List<int> counts;
+  final List<String> readingGroups;
+
+  Record(this.readings, this.counts) : readingGroups = splitReadings(readings);
+
+  @override
+  String toString() => (readings, counts).toString();
+
+  static List<String> splitReadings(String readings) => readings.replaceAll(".", " ").trim().split(spaceRe);
+
+  (String, int) get hash => (readingGroups.join("."), hashObjects(counts));
+
+  factory Record.single() => Record("#", [1]);
+
+  bool get isMatch => readingGroups.length == counts.length &&
+        readingGroups.zip(counts).every((e) => e.$1.length == e.$2);
+
+  bool determinedMatch() => readingGroups
+        .takeWhile((e) => !e.contains("?"))
+        .zip(counts)
+        .every((e) => e.$1.length == e.$2);
+
+  bool groupCountMatch() => readingGroups
+      .where((e) => e.contains("#")).length <= counts.length;
+
+  bool mayMatch() => determinedMatch() && groupCountMatch();
 }
 
 (String, String) preprocess(String row) {
@@ -36,84 +75,25 @@ Future<void> main() async {
       List<String>.filled(count, record.$2).join(","),
   );
 
-(String, List<int>) parse((String, String) record) {
-  var readings = splitRecords(record.$1);
-  var counts = record.$2.split(",").map(int.parse).toList();
+Record parse((String, String) record) => Record(
+    Record.splitReadings(record.$1).join("."),
+    record.$2.split(",").map(int.parse).toList()
+);
 
-  while (counts.isNotEmpty) {
-    if (readings.first.length == counts.first && readings.first.contains("#")) {
-      readings.removeAt(0);
-      counts.removeAt(0);
-      continue;
-    }
-    if (readings.last.length == counts.last && readings.last.contains("#")) {
-      readings.removeLast();
-      counts.removeLast();
-      continue;
-    }
-    if (readings.first.length < counts.first && !readings.first.contains("#")) { // all are ???
-      readings.removeAt(0); // all should be ...
-      continue;
-    }
-    if (readings.last.length < counts.last && !readings.last.contains("#")) { // all are ???
-      readings.removeLast(); // all should be ...
-      continue;
-    }
+int calcCombinationsCached(Record record) => cache[record.hash] ??= calcCombinations(record);
 
-    break;
+int calcCombinations(Record record) {
+  if (!record.readings.contains("?")) {
+    return record.isMatch ? 1 : 0;
   }
-
-  if (readings.isEmpty) assert(counts.isEmpty);
-  if (counts.isEmpty) return ("#", [1]);
-  return (readings.join("."), counts);
-}
-
-bool isMatch(String readings, List<int> counts) {
-  final groups = splitRecords(readings);
-  return groups.length == counts.length &&
-      groups.zip(counts).every((e) => e.$1.length == e.$2);
-}
-
-bool mayMatch(String readings, List<int> counts) {
-  return splitRecords(readings)
-      .takeWhile((e) => !e.contains("?"))
-      .zip(counts)
-      .every((e) => e.$1.length == e.$2);
-}
-
-int calcCombinations((String, List<int>) record) {
-  final recordHash = (splitRecords(record.$1).join("."), hashObjects(record.$2));
-  if (cache.containsKey(recordHash)) {
-    // print(record);
-    return cache[recordHash]!;
-  }
-
-  int res = 0;
-  if (!record.$1.contains("?")) {
-    res = isMatch(record.$1, record.$2) ? 1 : 0;
-  }
-  else if (mayMatch(record.$1, record.$2)) {
-    res = const [".", "#"]
-      .map((e) => record.$1.replaceFirst("?", e))
-      .map((e) => calcCombinations((e, record.$2)))
+  if (record.mayMatch()) {
+    return const [".", "#"]
+      .map((e) => record.readings.replaceFirst("?", e))
+      .map((e) => calcCombinationsCached(Record(e, record.counts)))
       .sum();
   }
-
-  cache[recordHash] = res;
-  return res;
+  return 0;
 }
 
-List<String> splitRecords(String records) => records.replaceAll(".", " ").trim().split(spaceRe);
-
 // part 1: 7460
-// part 2:
-
-/*
-6727108
-7460
-
--3254662897731616768
-
-(?.?.#??????#?.????.?.#??????#?.????.?.#??????#?.????.?.#??????#?.????.?.#??????#?.??, [1, 2, 1, 2, 1, 2, 1, 2, 1, 2])
-
-*/
+// part 2: 6720660274964
