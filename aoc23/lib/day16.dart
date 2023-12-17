@@ -15,8 +15,6 @@ final example = r"""
 ..//.|....
 """.trim();
 
-enum Dir { n, w, e, s }
-
 late final List<List<String>> data;
 late final Rectangle<int> border;
 
@@ -24,7 +22,7 @@ Future<void> main() async {
   data = await getData().map((e) => e.split("")).toList();
   // data = example.split("\n").map((e) => e.split("")).toList();
 
-  border = Rectangle(0, 0, data[0].length - 1, data.length - 1);
+  border = data.getBorders();
 
   final part1 = beam(Point(0, 0), Point(-1, 0));
   print(part1);
@@ -56,7 +54,7 @@ void encounter(
 Iterable<Point<int>> move(Point<int> curr, Point<int> prev) {
   final dir = comingFrom(curr, prev);
   final nextDir = getNextDir(data[curr.y][curr.x], dir);
-  return nextDir.map((e) => convertDir(e) + curr);
+  return nextDir.map((e) => dirDelta[e]! + curr);
 }
 
 Dir comingFrom(Point<int> curr, Point<int> prev) {
@@ -99,12 +97,6 @@ List<Dir> getNextDir(String tile, Dir comingDir) => switch (tile) {
   },
   _ => throw("Unexpected!"),
 };
-
-Point<int> convertDir(Dir dir) => [
-              Point(0, -1),
-  Point(-1, 0),            Point(1, 0),
-              Point(0, 1),
-][dir.index];
 
 Iterable<(Point<int>, Point<int>)> getInitialPoints() sync* {
   for (int i = border.left; i <= border.right; i++) {

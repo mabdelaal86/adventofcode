@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 import 'dart:math' as math;
+import 'dart:math' show Point, Rectangle;
 
 final spaceRe = RegExp(r" +");
 
@@ -18,7 +19,6 @@ Stream<String> getData() => File("data/${getStem(Platform.script)}.txt")
 
 String getStem(Uri path) => path.pathSegments.last.split(".")[0];
 
-T echo<T>(T obj, {String prefix = "", String Function(T p)? format}) => obj.echo(prefix: prefix, format: format);
 
 extension Echo<T> on T {
   T echo({String prefix = "", String Function(T p)? format}) {
@@ -27,6 +27,9 @@ extension Echo<T> on T {
     return this;
   }
 }
+
+T echo<T>(T obj, {String prefix = "", String Function(T p)? format}) => obj.echo(prefix: prefix, format: format);
+
 
 extension PrintAll<T> on Iterable<T> {
   void printAll() => forEach((e) => print(e));
@@ -41,13 +44,12 @@ extension PrintAll<T> on Iterable<T> {
 
 extension Matrix<T> on Iterable<List<T>> {
   List<List<T>> rotate90([bool anticlockwise = false]) {
-    final iter = iterator;
-    if (!iter.moveNext()) return [];
+    if (isEmpty) return [];
 
-    final res = List.generate(iter.current.length, (i) => <T>[iter.current[i]]);
+    final res = List.generate(first.length, (i) => <T>[]);
 
-    while (iter.moveNext()) {
-      for (final (idx, col) in iter.current.indexed) {
+    for (final row in this) {
+      for (final (idx, col) in row.indexed) {
         if (anticlockwise) {
           res[res.length - idx - 1].add(col);
         } else {
@@ -58,4 +60,16 @@ extension Matrix<T> on Iterable<List<T>> {
 
     return res;
   }
+
+  Rectangle<int> getBorders() => Rectangle(0, 0, first.length - 1, length - 1);
 }
+
+
+enum Dir { n, w, e, s }
+
+const dirDelta = {
+  Dir.n: Point(0, -1),
+  Dir.w: Point(-1, 0),
+  Dir.e: Point(1, 0),
+  Dir.s: Point(0, 1),
+};
