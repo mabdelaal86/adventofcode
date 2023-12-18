@@ -1,10 +1,10 @@
 import 'common.dart';
 
-late final List<String> data;
-
 final example = r"""
 
 """.trim();
+
+late final List<String> data;
 
 Future<void> main() async {
   data = await getData().toList();
