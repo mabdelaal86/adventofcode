@@ -31,7 +31,7 @@ extension Echo<T> on T {
 T echo<T>(T obj, {String prefix = "", String Function(T p)? format}) => obj.echo(prefix: prefix, format: format);
 
 
-extension PrintAll<T> on Iterable<T> {
+extension IterableExt<T> on Iterable<T> {
   void printAll() => forEach((e) => print(e));
 
   Iterable<(T, K)> zip<K>(Iterable<K> other) sync* {
@@ -42,8 +42,12 @@ extension PrintAll<T> on Iterable<T> {
   }
 }
 
-extension Matrix<T> on Iterable<List<T>> {
+extension IterableListExt<T> on Iterable<List<T>> {
   Rectangle<int> getBorders() => Rectangle(0, 0, first.length - 1, length - 1);
+}
+
+extension IterableRecord2Ext<K, V> on Iterable<(K, V)> {
+  Map<K, V> toMap() => { for (var item in this) item.$1 : item.$2 };
 }
 
 
