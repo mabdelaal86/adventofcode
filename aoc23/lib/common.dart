@@ -43,24 +43,6 @@ extension PrintAll<T> on Iterable<T> {
 }
 
 extension Matrix<T> on Iterable<List<T>> {
-  List<List<T>> rotate90([bool anticlockwise = false]) {
-    if (isEmpty) return [];
-
-    final res = List.generate(first.length, (i) => <T>[]);
-
-    for (final row in this) {
-      for (final (idx, col) in row.indexed) {
-        if (anticlockwise) {
-          res[res.length - idx - 1].add(col);
-        } else {
-          res[idx].insert(0, col);
-        }
-      }
-    }
-
-    return res;
-  }
-
   Rectangle<int> getBorders() => Rectangle(0, 0, first.length - 1, length - 1);
 }
 
@@ -73,3 +55,12 @@ const dirDelta = {
   Dir.e: Point(1, 0),
   Dir.s: Point(0, 1),
 };
+
+
+int lowestDivisor(int n) {
+  if (n.isEven) return 2;
+  for (int i = 3; i < n; i += 2) {
+    if (n % i == 0) return i;
+  }
+  return n;
+}

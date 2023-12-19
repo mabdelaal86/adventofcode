@@ -27,39 +27,23 @@ final str2Dir = {"U": Dir.n, "D": Dir.s, "R": Dir.e, "L": Dir.w};
 final num2Dir = {"3": Dir.n, "1": Dir.s, "0": Dir.e, "2": Dir.w};
 
 Future<void> main() async {
-  // data = await getData().toList();
-  data = example.split("\n");
+  data = await getData().toList();
+  // data = example.split("\n");
 
   // data.printAll();
   final processed1 = data.map(process1);
   List<Point<int>> edges1 = getEdges(processed1);
 
-  printEdges(edges1);
+  // printEdges(edges1);
 
   final part1 = area(edges1);
   print(part1);
 
-  final processed2 = data.map(process2);
+  final processed2 = data.map(process2).toList();
+  adjustData(processed2);
   List<Point<int>> edges2 = getEdges(processed2);
 
-  print(processed2);
-  printEdges(edges2);
-}
-
-List<Point<int>> getEdges(Iterable<(Dir, int)> processed) {
-  final edges = [Point(0, 0)];
-  for (var e in processed) {
-    fillEdges(edges, e);
-  }
-  adjustEdges(edges);
-  return edges;
-}
-
-void printEdges(List<Point<int>> edges) {
-  final m = edges.reduce((val, elm) => Point(max(val.x, elm.x), max(val.y, elm.y)));
-  for (final r in min(1000, m.y + 1).range) {
-    print(min(1000, m.x + 1).range.map((c) => edges.contains(Point(c, r)) ? "#" : ".").join());
-  }
+  // printEdges(edges2);
 }
 
 (Dir, int) process1(String line) {
@@ -70,6 +54,20 @@ void printEdges(List<Point<int>> edges) {
 (Dir, int) process2(String line) {
   final color = line.split(" ").last;
   return (num2Dir[color[7]]!, int.parse(color.substring(2, 7), radix: 16));
+}
+
+void adjustData(List<(Dir, int)> elements) {
+  // final x = elements.map((e) => e.$2).map(echo).map(lowestDivisor).map(echo).toList();
+  // print(x);
+}
+
+List<Point<int>> getEdges(Iterable<(Dir, int)> processed) {
+  final edges = [Point(0, 0)];
+  for (var e in processed) {
+    fillEdges(edges, e);
+  }
+  adjustEdges(edges);
+  return edges;
 }
 
 void fillEdges(List<Point<int>> edges, (Dir, int) item) {
@@ -105,6 +103,13 @@ int area(List<Point<int>> edges) {
   }
 
   return res;
+}
+
+void printEdges(List<Point<int>> edges) {
+  final m = edges.reduce((val, elm) => Point(max(val.x, elm.x), max(val.y, elm.y)));
+  for (final r in min(1000, m.y + 1).range) {
+    print(min(1000, m.x + 1).range.map((c) => edges.contains(Point(c, r)) ? "#" : ".").join());
+  }
 }
 
 // part 1: 28911
