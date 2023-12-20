@@ -40,6 +40,8 @@ extension IterableExt<T> on Iterable<T> {
       yield (iter1.current, iter2.current);
     }
   }
+
+  bool allAre(T value) => every((e) => e == value);
 }
 
 extension IterableListExt<T> on Iterable<List<T>> {
