@@ -28,7 +28,8 @@ extension Echo<T> on T {
   }
 }
 
-T echo<T>(T obj, {String prefix = "", String Function(T p)? format}) => obj.echo(prefix: prefix, format: format);
+T echo<T>(T obj, {String prefix = "", String Function(T p)? format}) => obj
+    .echo(prefix: prefix, format: format);
 
 
 extension IterableExt<T> on Iterable<T> {
