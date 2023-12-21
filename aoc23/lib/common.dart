@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 import 'dart:math' as math;
-import 'dart:math' show Point, Rectangle;
+import 'dart:math' show Point;
 
 final spaceRe = RegExp(r" +");
 
@@ -45,8 +45,10 @@ extension IterableExt<T> on Iterable<T> {
   bool allAre(T value) => every((e) => e == value);
 }
 
-extension IterableListExt<T> on Iterable<List<T>> {
-  Rectangle<int> getBorders() => Rectangle(0, 0, first.length - 1, length - 1);
+extension ListListExt<T> on List<List<T>> {
+  int get width => first.length;
+  bool containsPoint(Point<int> point) =>
+      0 <= point.x && point.x < width && 0 <= point.y && point.y < length;
 }
 
 extension IterableRecord2Ext<K, V> on Iterable<(K, V)> {

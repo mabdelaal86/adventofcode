@@ -20,7 +20,6 @@ final example = r"""
 
 late final List<String> data;
 late final List<List<int>> processed;
-late final Rectangle<int> border;
 final cache = <Point<int>, int>{};
 
 Future<void> main() async {
@@ -30,9 +29,8 @@ Future<void> main() async {
   processed = data
       .map((e) => e.split("").map(int.parse).toList())
       .toList();
-  border = processed.getBorders();
 
-  final part1 = cacheTraverse([border.topLeft]);
+  final part1 = cacheTraverse([Point(0, 0)]);
   print(part1);
 }
 
@@ -41,7 +39,7 @@ int cacheTraverse(List<Point<int>> path) {
 }
 
 int traverse(List<Point<int>> path) {
-  if (path.first == border.bottomRight) return 0;
+  if (path.first == Point(processed.width - 1, processed.length - 1)) return 0;
 
   int minHeatLoss = 999999999999999999;
   for (final block in nextBlocks(path)) {
@@ -58,7 +56,7 @@ int blockCost(Point<int> block) => processed[block.y][block.x];
 
 List<Point<int>> nextBlocks(List<Point<int>> path) => nextDirs(path)
     .map((e) => e + path[0])
-    .where((e) => border.containsPoint(e))
+    .where((e) => processed.containsPoint(e))
     .where((e) => !path.contains(e))
     .toList();
 

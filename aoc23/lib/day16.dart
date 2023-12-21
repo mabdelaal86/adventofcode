@@ -22,7 +22,7 @@ Future<void> main() async {
   data = await getData().map((e) => e.split("")).toList();
   // data = example.split("\n").map((e) => e.split("")).toList();
 
-  border = data.getBorders();
+  border = Rectangle(0, 0, data.width - 1, data.length - 1);
 
   final part1 = beam(Point(0, 0), Point(-1, 0));
   print(part1);
