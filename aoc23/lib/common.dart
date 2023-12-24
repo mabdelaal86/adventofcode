@@ -12,7 +12,7 @@ extension IterableMath on Iterable<int> {
   int max() => reduce((a, b) => math.max(a, b));
 }
 
-Stream<String> getData() => File("data/${getStem(Platform.script)}.txt")
+Stream<String> getData([String? name]) => File("data/${name ?? getStem(Platform.script)}.txt")
     .openRead()
     .transform(utf8.decoder)
     .transform(LineSplitter());

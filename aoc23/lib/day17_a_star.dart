@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:basics/basics.dart';
-import 'package:quiver/core.dart';
 
 import 'common.dart';
 
@@ -28,7 +27,7 @@ final start = Point(0, 0);
 late final Point<int> end;
 
 Future<void> main() async {
-  // data = await getData().toList();
+  // data = await getData("day17").toList();
   data = example.split("\n");
 
   processed = data
@@ -38,26 +37,26 @@ Future<void> main() async {
   end = Point(processed.width - 1, processed.length - 1);
 
   final part1 = traverse();
-  print(part1.totalHeatLoss - getBlockCost(start));
-  // drawPath(part1.getPath().toList());
+  print(part1.totalHeatLoss);
+  drawPath(part1.getPath().toList());
 }
 
 Node traverse() {
-  final visited = {start.hashCode: Node(start)};
+  final visited = {start: Node(start)};
 
   while (true) {
     final current = visited.values
         .where((e) => !e.evaluated)
-        .min((a, b) => a.totalHeatLoss.compareTo(b.totalHeatLoss))!;
+        .min((a, b) => a.fCost.compareTo(b.fCost))!;
 
     if (current.block == end) return current;
 
     current.evaluated = true;
-    for (final node in current.nextNodes()) {
-      final hash = hashObjects(node.getPath(4));
-      final old = visited[hash];
-      if (old == null || (!old.evaluated && old.totalHeatLoss > node.totalHeatLoss)) {
-        visited[hash] = node;
+    for (final block in current.nextBlocks()) {
+      final node = Node(block, current);
+      final old = visited[block];
+      if (old == null || (!old.evaluated && old.fCost >= node.fCost)) {
+        visited[block] = node;
       }
     }
   }
@@ -69,12 +68,15 @@ class Node {
   late int totalHeatLoss;
   bool evaluated = false;
 
+  num get heuristic => block.distanceTo(end);
+  num get fCost => heuristic + totalHeatLoss;
+
   Node(this.block, [this.parent]) {
-    totalHeatLoss = getBlockCost(block) + (parent?.totalHeatLoss ?? 0);
+    totalHeatLoss = parent == null ? 0 : getBlockCost(block) + parent!.totalHeatLoss;
   }
 
   @override
-  String toString() => "$block ($evaluated, $totalHeatLoss)";
+  String toString() => "$block ($evaluated, $fCost)";
 
   Iterable<Point<int>> getPath([int count = -1]) sync* {
     Node? node = this;
@@ -104,10 +106,11 @@ class Node {
     return dirs;
   }
 
-  Iterable<Node> nextNodes() => _nextDirs()
+  List<Point<int>> nextBlocks() => _nextDirs()
       .map((e) => e + block)
       .where((e) => isValid(e))
-      .map((e) => Node(e, this));
+      // .where((e) => !path.contains(e))
+      .toList();
 }
 
 int getBlockCost(Point<int> block) => processed[block.y][block.x];
@@ -123,5 +126,5 @@ void drawPath(List<Point<int>> path) {
   }
 }
 
-// part 1: 859
+// part 1: 915x
 // part 2:
