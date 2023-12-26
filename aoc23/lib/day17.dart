@@ -5,7 +5,7 @@ import 'package:quiver/core.dart';
 
 import 'common.dart';
 
-final example = r"""
+final example1 = r"""
 2413432311323
 3215453535623
 3255245654254
@@ -21,6 +21,14 @@ final example = r"""
 4322674655533
 """.trim();
 
+final example2 = r"""
+111111111111
+999999999991
+999999999991
+999999999991
+999999999991
+""".trim();
+
 late final List<String> data;
 late final List<List<int>> processed;
 
@@ -28,8 +36,9 @@ final start = Point(0, 0);
 late final Point<int> end;
 
 Future<void> main() async {
-  // data = await getData().toList();
-  data = example.split("\n");
+  data = await getData().toList();
+  // data = example1.split("\n");
+  // data = example2.split("\n");
 
   processed = data
       .map((e) => e.split("").map(int.parse).toList())
@@ -37,15 +46,28 @@ Future<void> main() async {
 
   end = Point(processed.width - 1, processed.length - 1);
 
-  final part1 = traverse1();
-  print(part1.heatLoss);
+  // final part1 = traverse1();
+  // print(part1.heatLoss);
+
+  final part2 = traverse2();
+  print(part2.heatLoss);
 }
 
 Node traverse1() {
-  final startNodes = [
-    Node(Point(1, 0), Dir.e, 1),
-    Node(Point(0, 1), Dir.s, 1),
-  ];
+  final startNodes = [Dir.e, Dir.s]
+      .map((d) => (d, start + dirDelta[d]!))
+      .map((e) => Node(e.$2, e.$1, 1, getBlockCost(e.$2)));
+  return traverse(startNodes, (node) => node.nextNodes1());
+}
+
+Node traverse2() {
+  final startNodes = [Dir.e, Dir.s]
+      .map((d) => moveInDir(start, d, 4)!)
+      .map((e) => Node(e.block, e.dir, 4, e.heatLoss));
+  return traverse(startNodes, (node) => node.nextNodes2());
+}
+
+Node traverse(Iterable<Node> startNodes, Iterable<Node> Function(Node) nextNode) {
   final visited = { for (final node in startNodes) node.hashCode: node };
 
   while (true) {
@@ -56,7 +78,7 @@ Node traverse1() {
     if (current.block == end) return current;
 
     current.evaluated = true;
-    for (final node in current.nextNodes1()) {
+    for (final node in nextNode(current)) {
       final hash = node.hashCode;
       final old = visited[hash];
       if (old == null || (!old.evaluated && old.heatLoss > node.heatLoss)) {
@@ -73,14 +95,12 @@ class Node {
   Dir dir;
   int steps;
 
-  Node(this.block, this.dir, this.steps, [int totalHeatLoss = 0]) {
-    heatLoss = getBlockCost(block) + totalHeatLoss;
-  }
+  Node(this.block, this.dir, this.steps, this.heatLoss);
 
   @override
   String toString() => "$block ($evaluated, $heatLoss)";
 
-  List<Dir> _nextDirs1() {
+  List<Dir> _nextDirs(int maxSteps) {
     const reverseDir = {
       Dir.n: Dir.s, Dir.s: Dir.n,
       Dir.w: Dir.e, Dir.e: Dir.w,
@@ -88,16 +108,33 @@ class Node {
 
     final dirs = dirDelta.keys.toList();
     dirs.remove(reverseDir[dir]); // no go back
-    if (steps == 3) dirs.remove(dir);
+    if (steps == maxSteps) dirs.remove(dir);
 
     return dirs;
   }
 
   Iterable<Node> nextNodes1() sync* {
-    for (final nextDir in _nextDirs1()) {
+    for (final nextDir in _nextDirs(3)) {
       final nextBlock = dirDelta[nextDir]! + block;
       if (!isValid(nextBlock)) continue;
-      yield Node(nextBlock, nextDir, nextDir == dir ? steps + 1 : 1, heatLoss);
+      final nextSteps = nextDir == dir ? steps + 1 : 1;
+      final totalHeatLoss = heatLoss + getBlockCost(nextBlock);
+      yield Node(nextBlock, nextDir, nextSteps, totalHeatLoss);
+    }
+  }
+
+  Iterable<Node> nextNodes2() sync* {
+    for (final nextDir in _nextDirs(10)) {
+      if (nextDir == dir) {
+        final nextBlock = dirDelta[nextDir]! + block;
+        if (!isValid(nextBlock)) continue;
+        final totalHeatLoss = heatLoss + getBlockCost(nextBlock);
+        yield Node(nextBlock, nextDir, steps + 1, totalHeatLoss);
+      } else {
+        final next = moveInDir(block, nextDir, 4);
+        if (next == null) continue;
+        yield Node(next.block, nextDir, 4, next.heatLoss + heatLoss);
+      }
     }
   }
 
@@ -105,9 +142,20 @@ class Node {
   int get hashCode => hash3(block, dir, steps);
 }
 
+({Point<int> block, Dir dir, int heatLoss})? moveInDir(Point<int> start, Dir dir, int steps) {
+  int heatLoss = 0;
+  var block = start;
+  for (var _ in steps.range) {
+    block += dirDelta[dir]!;
+    if (!isValid(block)) return null;
+    heatLoss += getBlockCost(block);
+  }
+  return (block: block, dir: dir, heatLoss: heatLoss);
+}
+
 int getBlockCost(Point<int> block) => processed[block.y][block.x];
 
 bool isValid(Point<int> block) => processed.containsPoint(block);
 
 // part 1: 859
-// part 2:
+// part 2: 1027
