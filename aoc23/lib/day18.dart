@@ -23,45 +23,36 @@ U 2 (#7a21e3)
 
 late final List<String> data;
 
-final str2Dir = {"U": Dir.n, "D": Dir.s, "R": Dir.e, "L": Dir.w};
-final num2Dir = {"3": Dir.n, "1": Dir.s, "0": Dir.e, "2": Dir.w};
+final str2Dir = {"U": Direction.north, "D": Direction.south, "R": Direction.east, "L": Direction.west};
+final num2Dir = {"3": Direction.north, "1": Direction.south, "0": Direction.east, "2": Direction.west};
 
 Future<void> main() async {
-  data = await getData().toList();
-  // data = example.split("\n");
+  // data = await getData().toList();
+  data = example.split("\n");
 
   // data.printAll();
   final processed1 = data.map(process1);
   List<Point<int>> edges1 = getEdges(processed1);
-
-  // printEdges(edges1);
-
   final part1 = area(edges1);
   print(part1);
 
   final processed2 = data.map(process2).toList();
-  adjustData(processed2);
   List<Point<int>> edges2 = getEdges(processed2);
-
-  // printEdges(edges2);
+  final part2 = area(edges2);
+  print(part2);
 }
 
-(Dir, int) process1(String line) {
+Displacement process1(String line) {
   final parts = line.split(" ");
-  return (str2Dir[parts[0]]!, int.parse(parts[1]));
+  return Displacement(str2Dir[parts[0]]!, int.parse(parts[1]));
 }
 
-(Dir, int) process2(String line) {
+Displacement process2(String line) {
   final color = line.split(" ").last;
-  return (num2Dir[color[7]]!, int.parse(color.substring(2, 7), radix: 16));
+  return Displacement(num2Dir[color[7]]!, int.parse(color.substring(2, 7), radix: 16));
 }
 
-void adjustData(List<(Dir, int)> elements) {
-  // final x = elements.map((e) => e.$2).map(echo).map(lowestDivisor).map(echo).toList();
-  // print(x);
-}
-
-List<Point<int>> getEdges(Iterable<(Dir, int)> processed) {
+List<Point<int>> getEdges(Iterable<Displacement> processed) {
   final edges = [Point(0, 0)];
   for (var e in processed) {
     fillEdges(edges, e);
@@ -70,15 +61,16 @@ List<Point<int>> getEdges(Iterable<(Dir, int)> processed) {
   return edges;
 }
 
-void fillEdges(List<Point<int>> edges, (Dir, int) item) {
-  final delta = dirDelta[item.$1]!;
+void fillEdges(List<Point<int>> edges, Displacement item) {
+  final delta = dirDelta[item.direction]!;
   final last = edges.last;
-  final newEdges = item.$2.range.map((i) => delta * (i + 1) + last);
+  final newEdges = item.distance.range.map((i) => delta * (i + 1) + last);
   edges.addAll(newEdges);
 }
 
 void adjustEdges(List<Point<int>> edges) {
-  final topLeft = edges.reduce((val, elm) => Point(min(val.x, elm.x), min(val.y, elm.y)));
+  final topLeft = edges
+      .reduce((val, elm) => Point(min(val.x, elm.x), min(val.y, elm.y)));
   for (final (index, point) in edges.indexed) {
     edges[index] = point - topLeft;
   }
@@ -86,7 +78,8 @@ void adjustEdges(List<Point<int>> edges) {
 
 int area(List<Point<int>> edges) {
   int res = 0;
-  final bottomRight = edges.reduce((val, elm) => Point(max(val.x, elm.x), max(val.y, elm.y)));
+  final bottomRight = edges
+      .reduce((val, elm) => Point(max(val.x, elm.x), max(val.y, elm.y)));
 
   for (int y = 0; y <= bottomRight.y; y++) {
     bool up = false, dn = false;

@@ -54,16 +54,15 @@ Future<void> main() async {
 }
 
 Node traverse1() {
-  final startNodes = [Dir.e, Dir.s]
+  final startNodes = [Direction.east, Direction.south]
       .map((d) => (d, start + dirDelta[d]!))
       .map((e) => Node(e.$2, e.$1, 1, getBlockCost(e.$2)));
   return traverse(startNodes, (node) => node.nextNodes1());
 }
 
 Node traverse2() {
-  final startNodes = [Dir.e, Dir.s]
-      .map((d) => moveInDir(start, d, 4)!)
-      .map((e) => Node(e.block, e.dir, 4, e.heatLoss));
+  final startNodes = [Direction.east, Direction.south]
+      .map((d) => moveInDir(start, d, 4, 0)!);
   return traverse(startNodes, (node) => node.nextNodes2());
 }
 
@@ -92,7 +91,7 @@ class Node {
   final Point<int> block;
   late int heatLoss;
   bool evaluated = false;
-  Dir dir;
+  Direction dir;
   int steps;
 
   Node(this.block, this.dir, this.steps, this.heatLoss);
@@ -100,10 +99,12 @@ class Node {
   @override
   String toString() => "$block ($evaluated, $heatLoss)";
 
-  List<Dir> _nextDirs(int maxSteps) {
+  List<Direction> _nextDirs(int maxSteps) {
     const reverseDir = {
-      Dir.n: Dir.s, Dir.s: Dir.n,
-      Dir.w: Dir.e, Dir.e: Dir.w,
+      Direction.north: Direction.south,
+      Direction.south: Direction.north,
+      Direction.west: Direction.east,
+      Direction.east: Direction.west,
     };
 
     final dirs = dirDelta.keys.toList();
@@ -131,9 +132,8 @@ class Node {
         final totalHeatLoss = heatLoss + getBlockCost(nextBlock);
         yield Node(nextBlock, nextDir, steps + 1, totalHeatLoss);
       } else {
-        final next = moveInDir(block, nextDir, 4);
-        if (next == null) continue;
-        yield Node(next.block, nextDir, 4, next.heatLoss + heatLoss);
+        final next = moveInDir(block, nextDir, 4, heatLoss);
+        if (next != null) yield next;
       }
     }
   }
@@ -142,15 +142,15 @@ class Node {
   int get hashCode => hash3(block, dir, steps);
 }
 
-({Point<int> block, Dir dir, int heatLoss})? moveInDir(Point<int> start, Dir dir, int steps) {
-  int heatLoss = 0;
+Node? moveInDir(Point<int> start, Direction dir, int steps, int initHeatLoss) {
+  int heatLoss = initHeatLoss;
   var block = start;
   for (var _ in steps.range) {
     block += dirDelta[dir]!;
     if (!isValid(block)) return null;
     heatLoss += getBlockCost(block);
   }
-  return (block: block, dir: dir, heatLoss: heatLoss);
+  return Node(block, dir, steps, heatLoss);
 }
 
 int getBlockCost(Point<int> block) => processed[block.y][block.x];

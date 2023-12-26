@@ -56,14 +56,21 @@ extension IterableRecord2Ext<K, V> on Iterable<(K, V)> {
 }
 
 
-enum Dir { n, w, e, s }
+enum Direction { north, west, east, south }
 
 const dirDelta = {
-  Dir.n: Point(0, -1),
-  Dir.w: Point(-1, 0),
-  Dir.e: Point(1, 0),
-  Dir.s: Point(0, 1),
+  Direction.north: Point(0, -1),
+  Direction.west: Point(-1, 0),
+  Direction.east: Point(1, 0),
+  Direction.south: Point(0, 1),
 };
+
+class Displacement {
+  final Direction direction;
+  final int distance;
+
+  Displacement(this.direction, this.distance);
+}
 
 
 int lowestDivisor(int n) {

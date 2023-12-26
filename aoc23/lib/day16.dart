@@ -57,43 +57,43 @@ Iterable<Point<int>> move(Point<int> curr, Point<int> prev) {
   return nextDir.map((e) => dirDelta[e]! + curr);
 }
 
-Dir comingFrom(Point<int> curr, Point<int> prev) {
+Direction comingFrom(Point<int> curr, Point<int> prev) {
   assert(curr != prev && (curr.x == prev.x || curr.y == prev.y));
   if (prev.x == curr.x) {
-    return prev.y < curr.y ? Dir.n : Dir.s;
+    return prev.y < curr.y ? Direction.north : Direction.south;
   } else {
-    return prev.x < curr.x ? Dir.w : Dir.e;
+    return prev.x < curr.x ? Direction.west : Direction.east;
   }
 }
 
-List<Dir> getNextDir(String tile, Dir comingDir) => switch (tile) {
+List<Direction> getNextDir(String tile, Direction comingDir) => switch (tile) {
   "." => switch (comingDir) {
-    Dir.e => [Dir.w],
-    Dir.w => [Dir.e],
-    Dir.n => [Dir.s],
-    Dir.s => [Dir.n],
+    Direction.east => [Direction.west],
+    Direction.west => [Direction.east],
+    Direction.north => [Direction.south],
+    Direction.south => [Direction.north],
   },
   "-" => switch (comingDir) {
-    Dir.e => [Dir.w],
-    Dir.w => [Dir.e],
-    Dir.n || Dir.s => [Dir.e, Dir.w],
+    Direction.east => [Direction.west],
+    Direction.west => [Direction.east],
+    Direction.north || Direction.south => [Direction.east, Direction.west],
   },
   "|" => switch (comingDir) {
-    Dir.n => [Dir.s],
-    Dir.s => [Dir.n],
-    Dir.e || Dir.w => [Dir.n, Dir.s],
+    Direction.north => [Direction.south],
+    Direction.south => [Direction.north],
+    Direction.east || Direction.west => [Direction.north, Direction.south],
   },
   "/" => switch (comingDir) {
-    Dir.e => [Dir.s],
-    Dir.w => [Dir.n],
-    Dir.n => [Dir.w],
-    Dir.s => [Dir.e],
+    Direction.east => [Direction.south],
+    Direction.west => [Direction.north],
+    Direction.north => [Direction.west],
+    Direction.south => [Direction.east],
   },
   "\\" => switch (comingDir) {
-    Dir.e => [Dir.n],
-    Dir.w => [Dir.s],
-    Dir.n => [Dir.e],
-    Dir.s => [Dir.w],
+    Direction.east => [Direction.north],
+    Direction.west => [Direction.south],
+    Direction.north => [Direction.east],
+    Direction.south => [Direction.west],
   },
   _ => throw("Unexpected!"),
 };
