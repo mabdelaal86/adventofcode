@@ -37,26 +37,29 @@ Future<void> main() async {
 
   end = Point(processed.width - 1, processed.length - 1);
 
-  final part1 = traverse();
-  print(part1.totalHeatLoss - getBlockCost(start));
-  // drawPath(part1.getPath().toList());
+  final part1 = traverse1();
+  print(part1.heatLoss);
 }
 
-Node traverse() {
-  final visited = {start.hashCode: Node(start)};
+Node traverse1() {
+  final startNodes = [
+    Node(Point(1, 0), Dir.e, 1),
+    Node(Point(0, 1), Dir.s, 1),
+  ];
+  final visited = { for (final node in startNodes) node.hashCode: node };
 
   while (true) {
     final current = visited.values
         .where((e) => !e.evaluated)
-        .min((a, b) => a.totalHeatLoss.compareTo(b.totalHeatLoss))!;
+        .min((a, b) => a.heatLoss.compareTo(b.heatLoss))!;
 
     if (current.block == end) return current;
 
     current.evaluated = true;
-    for (final node in current.nextNodes()) {
-      final hash = hashObjects(node.getPath(4));
+    for (final node in current.nextNodes1()) {
+      final hash = node.hashCode;
       final old = visited[hash];
-      if (old == null || (!old.evaluated && old.totalHeatLoss > node.totalHeatLoss)) {
+      if (old == null || (!old.evaluated && old.heatLoss > node.heatLoss)) {
         visited[hash] = node;
       }
     }
@@ -65,63 +68,46 @@ Node traverse() {
 
 class Node {
   final Point<int> block;
-  Node? parent;
-  late int totalHeatLoss;
+  late int heatLoss;
   bool evaluated = false;
+  Dir dir;
+  int steps;
 
-  Node(this.block, [this.parent]) {
-    totalHeatLoss = getBlockCost(block) + (parent?.totalHeatLoss ?? 0);
+  Node(this.block, this.dir, this.steps, [int totalHeatLoss = 0]) {
+    heatLoss = getBlockCost(block) + totalHeatLoss;
   }
 
   @override
-  String toString() => "$block ($evaluated, $totalHeatLoss)";
+  String toString() => "$block ($evaluated, $heatLoss)";
 
-  Iterable<Point<int>> getPath([int count = -1]) sync* {
-    Node? node = this;
-    for (int i = 0; i < count || count == -1; i++) {
-      if (node == null) break;
-      yield node.block;
-      node = node.parent;
-    }
-  }
+  List<Dir> _nextDirs1() {
+    const reverseDir = {
+      Dir.n: Dir.s, Dir.s: Dir.n,
+      Dir.w: Dir.e, Dir.e: Dir.w,
+    };
 
-  List<Point<int>> _nextDirs() {
-    final dirs = dirDelta.values.toList();
-    if (parent == null) return dirs;
-
-    // remove previous
-    final prev = parent!.block - block;
-    dirs.remove(prev);
-
-    final last4 = getPath(4).toList();
-    if (last4.length < 4) return dirs;
-
-    if (last4.every((e) => e.x == block.x) ||
-        last4.every((e) => e.y == block.y)) {
-      dirs.remove(prev * -1);
-    }
+    final dirs = dirDelta.keys.toList();
+    dirs.remove(reverseDir[dir]); // no go back
+    if (steps == 3) dirs.remove(dir);
 
     return dirs;
   }
 
-  Iterable<Node> nextNodes() => _nextDirs()
-      .map((e) => e + block)
-      .where((e) => isValid(e))
-      .map((e) => Node(e, this));
+  Iterable<Node> nextNodes1() sync* {
+    for (final nextDir in _nextDirs1()) {
+      final nextBlock = dirDelta[nextDir]! + block;
+      if (!isValid(nextBlock)) continue;
+      yield Node(nextBlock, nextDir, nextDir == dir ? steps + 1 : 1, heatLoss);
+    }
+  }
+
+  @override
+  int get hashCode => hash3(block, dir, steps);
 }
 
 int getBlockCost(Point<int> block) => processed[block.y][block.x];
 
 bool isValid(Point<int> block) => processed.containsPoint(block);
-
-void drawPath(List<Point<int>> path) {
-  for (final (y, row) in processed.indexed) {
-    final text = row.indexed
-        .map((e) => path.contains(Point(e.$1, y)) ? "*" : e.$2)
-        .join();
-    print(text);
-  }
-}
 
 // part 1: 859
 // part 2:
