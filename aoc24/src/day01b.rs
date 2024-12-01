@@ -2,7 +2,6 @@ use itertools::Itertools;
 
 use crate::common;
 
-#[allow(unused)]
 pub fn main() -> u32 {
     process(common::read_file("data/day01.txt"))
 }

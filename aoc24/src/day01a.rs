@@ -2,7 +2,6 @@ use itertools::Itertools;
 
 use crate::common;
 
-#[allow(unused)]
 pub fn main() -> u32 {
     process(common::read_file("data/day01.txt"))
 }
@@ -16,10 +15,10 @@ fn process(lines: impl IntoIterator<Item=String>) -> u32 {
             .map(|n| n.parse::<u32>().unwrap())
             .collect_tuple().unwrap();
         list1.push(a);
-        list1.sort();
         list2.push(b);
-        list2.sort();
     }
+    list1.sort();
+    list2.sort();
     // calc the absolute diff
     let res = list1.into_iter().zip(list2.into_iter())
         // .map(|(a, b)| {println!("** {:?}", (a, b)); (a, b)})
