@@ -8,7 +8,8 @@ pub fn read_file(filename: &str) -> impl Iterator<Item = String> {
         .map(|l| l.unwrap())
 }
 
-// pub fn log_value<T>(value: T) {
-//     println!("** {:?}", value);
-//     value
-// }
+#[allow(unused)]
+pub fn log_value<T: std::fmt::Debug>(value: T) -> T {
+    println!("** {:?}", value);
+    value
+}
