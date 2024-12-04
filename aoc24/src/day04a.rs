@@ -38,11 +38,7 @@ fn is_xmas(data: &Matrix<char>, r: i32, c: i32, i: usize, dir: &(i32, i32)) -> b
     let nr = r + dir.1 * i as i32;
     let nc = c + dir.0 * i as i32;
 
-    if nr < 0 || nr >= data.rows() as i32 || nc < 0 || nc >= data.cols() as i32 {
-        false
-    } else {
-        data.at(nr as usize, nc as usize) == &WORD[i]
-    }
+    Some(&WORD[i]) == data.get(nr as usize, nc as usize)
 }
 
 #[cfg(test)]

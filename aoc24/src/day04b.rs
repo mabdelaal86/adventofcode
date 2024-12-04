@@ -1,12 +1,10 @@
 use crate::common;
 use crate::common::Matrix;
 
-pub const DIRECTIONS: [(i32, i32); 4] = [
-    (-1, -1), (1, -1),
-    (-1,  1), (1,  1),
+pub const DIRECTIONS: [[(i32, i32); 2]; 2] = [
+    [(-1, -1), (1,  1)], // left-up , right-down
+    [(-1,  1), (1, -1)], // left-down , right-up
 ];
-
-const WORD: [char; 4] = ['X', 'M', 'A', 'S'];
 
 pub fn main() -> i32 {
     process(common::read_file("data/day04.txt"))
@@ -16,32 +14,24 @@ fn process(lines: impl IntoIterator<Item=String>) -> i32 {
     let matrix = common::to_matrix(lines);
 
     matrix.indices()
-        .map(|(r, c)| count_word(&matrix, r, c))
-        .sum()
+        .filter(|(r, c)| is_mas(&matrix, *r, *c))
+        .count() as i32
 }
 
-fn count_word(data: &Matrix<char>, r: usize, c: usize) -> i32 {
-    if data.at(r, c) != &WORD[0] {
-        return 0;
+fn is_mas(data: &Matrix<char>, r: usize, c: usize) -> bool {
+    if *data.at(r, c) != 'A' {
+        return false
     }
 
     DIRECTIONS.iter()
-        .map(|dir| {
-            (1..WORD.len()).all(|i| is_xmas(data, r as i32, c as i32, i, dir))
-        })
-        .map(|b| b as i32)
-        .sum()
+        .map(|dir| get_ms(data, r as i32, c as i32, dir))
+        .all(|ms| ms == ['M', 'S'] || ms == ['S', 'M'])
 }
 
-fn is_xmas(data: &Matrix<char>, r: i32, c: i32, i: usize, dir: &(i32, i32)) -> bool {
-    let nr = r + dir.1 * i as i32;
-    let nc = c + dir.0 * i as i32;
-
-    if nr < 0 || nr >= data.rows() as i32 || nc < 0 || nc >= data.cols() as i32 {
-        false
-    } else {
-        data.at(nr as usize, nc as usize) == &WORD[i]
-    }
+fn get_ms(data: &Matrix<char>, r: i32, c: i32, dir: &[(i32, i32); 2]) -> [char; 2] {
+    dir
+        .map(|(x, y)| (r + y, c + x))
+        .map(|(x, y)| *data.get(x as usize, y as usize).unwrap_or(&'.'))
 }
 
 #[cfg(test)]
@@ -51,31 +41,29 @@ mod tests {
     #[test]
     fn test_process1() {
         let lines = indoc::indoc! {"
-            ..X...
-            .SAMX.
-            .A..A.
-            XMAS.S
-            .X....
+            M.S
+            .A.
+            M.S
         "}.lines().map(|l| l.to_string());
 
-        assert_eq!(process(lines), 4);
+        assert_eq!(process(lines), 1);
     }
 
     #[test]
     fn test_process2() {
         let lines = indoc::indoc! {"
-            MMMSXXMASM
-            MSAMXMSMSA
-            AMXSXMAAMM
-            MSAMASMSMX
-            XMASAMXAMM
-            XXAMMXXAMA
-            SMSMSASXSS
-            SAXAMASAAA
-            MAMMMXMMMM
-            MXMXAXMASX
+            .M.S......
+            ..A..MSMS.
+            .M.S.MAA..
+            ..A.ASMSM.
+            .M.S.M....
+            ..........
+            S.S.S.S.S.
+            .A.A.A.A..
+            M.M.M.M.M.
+            ..........
         "}.lines().map(|l| l.to_string());
 
-        assert_eq!(process(lines), 18);
+        assert_eq!(process(lines), 9);
     }
 }

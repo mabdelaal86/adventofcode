@@ -27,9 +27,9 @@ impl<T> Matrix<T> where Vec<T>: FromIterator<char> {
         Self { data, rows, cols }
     }
 
-    // pub fn get(&self, rows: usize, cols: usize) -> Option<&T> {
-    //     self.data.get(rows).and_then(|row| row.get(cols))
-    // }
+    pub fn get(&self, rows: usize, cols: usize) -> Option<&T> {
+        self.data.get(rows).and_then(|row| row.get(cols))
+    }
 
     pub fn at(&self, rows: usize, cols: usize) -> &T {
         &self.data[rows][cols]
@@ -46,14 +46,14 @@ impl<T> Matrix<T> where Vec<T>: FromIterator<char> {
     //         (0..self.cols).map(move |c| (r, c, &self.data[r][c]))
     //     })
     // }
-
-    pub fn rows(&self) -> usize {
-        self.rows
-    }
-
-    pub fn cols(&self) -> usize {
-        self.cols
-    }
+    // 
+    // pub fn rows(&self) -> usize {
+    //     self.rows
+    // }
+    // 
+    // pub fn cols(&self) -> usize {
+    //     self.cols
+    // }
 }
 
 pub fn to_matrix(lines: impl IntoIterator<Item = String>) -> Matrix<char> {
