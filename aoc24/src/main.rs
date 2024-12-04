@@ -3,6 +3,7 @@ mod day00x;
 mod day01a; mod day01b;
 mod day02a; mod day02b;
 mod day03a; mod day03b;
+mod day04a; mod day04b;
 
 fn main() {
     let puzzle = std::env::args().nth(1).expect("no puzzle given");
@@ -15,6 +16,8 @@ fn main() {
         "day02b" => day02b::main(),
         "day03a" => day03a::main(),
         "day03b" => day03b::main(),
+        "day04a" => day04a::main(),
+        "day04b" => day04b::main(),
         _ => panic!("Invalid puzzle name"),
     };
 
