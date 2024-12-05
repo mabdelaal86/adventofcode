@@ -6,16 +6,16 @@ pub const DIRECTIONS: [[(i32, i32); 2]; 2] = [
     [(-1,  1), (1, -1)], // left-down , right-up
 ];
 
-pub fn main() -> i32 {
+pub fn main() -> u32 {
     process(common::read_file("data/day04.txt"))
 }
 
-fn process(lines: impl IntoIterator<Item=String>) -> i32 {
+fn process(lines: impl Iterator<Item=String>) -> u32 {
     let matrix = common::to_matrix(lines);
 
     matrix.indices()
         .filter(|(r, c)| is_mas(&matrix, *r, *c))
-        .count() as i32
+        .count() as u32
 }
 
 fn is_mas(data: &Matrix<char>, r: usize, c: usize) -> bool {

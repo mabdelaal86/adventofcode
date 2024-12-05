@@ -2,11 +2,11 @@ use itertools::Itertools;
 
 use crate::common;
 
-pub fn main() -> i32 {
+pub fn main() -> u32 {
     process(common::read_file("data/day02.txt"))
 }
 
-fn process(lines: impl IntoIterator<Item=String>) -> i32 {
+fn process(lines: impl Iterator<Item=String>) -> u32 {
     let mut safe_count = 0;
     // parse and sort the two lists
     for line in lines {

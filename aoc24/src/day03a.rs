@@ -2,16 +2,16 @@ use regex::Regex;
 
 use crate::common;
 
-pub fn main() -> i32 {
+pub fn main() -> u32 {
     process(common::read_file("data/day03.txt"))
 }
 
-fn process(lines: impl IntoIterator<Item=String>) -> i32 {
+fn process(lines: impl Iterator<Item=String>) -> u32 {
     let mut res = 0;
     let re = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
     for line in lines {
         for (_, [n1, n2]) in re.captures_iter(&line).map(|c| c.extract()) {
-            res += n1.parse::<i32>().unwrap() * n2.parse::<i32>().unwrap();
+            res += n1.parse::<u32>().unwrap() * n2.parse::<u32>().unwrap();
         }
     }
 

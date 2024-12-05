@@ -2,11 +2,11 @@ use regex::Regex;
 
 use crate::common;
 
-pub fn main() -> i32 {
+pub fn main() -> u32 {
     process(common::read_file("data/day03.txt"))
 }
 
-fn process(lines: impl IntoIterator<Item=String>) -> i32 {
+fn process(lines: impl Iterator<Item=String>) -> u32 {
     let mut res = 0;
     let mut enabled = true;
     let re = Regex::new(r"(mul|do|don't)\(((?:\d+,\d+)?)\)").unwrap();
@@ -18,8 +18,8 @@ fn process(lines: impl IntoIterator<Item=String>) -> i32 {
                 enabled = false;
             } else if enabled && !params.is_empty() {
                 res += params.split(',')
-                    .map(|x| x.parse::<i32>().unwrap())
-                    .product::<i32>();
+                    .map(|x| x.parse::<u32>().unwrap())
+                    .product::<u32>();
             }
         }
     }

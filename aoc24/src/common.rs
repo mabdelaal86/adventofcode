@@ -46,17 +46,17 @@ impl<T> Matrix<T> where Vec<T>: FromIterator<char> {
     //         (0..self.cols).map(move |c| (r, c, &self.data[r][c]))
     //     })
     // }
-    // 
+    //
     // pub fn rows(&self) -> usize {
     //     self.rows
     // }
-    // 
+    //
     // pub fn cols(&self) -> usize {
     //     self.cols
     // }
 }
 
-pub fn to_matrix(lines: impl IntoIterator<Item = String>) -> Matrix<char> {
+pub fn to_matrix(lines: impl Iterator<Item = String>) -> Matrix<char> {
     let data = lines.into_iter()
         .map(|l| l.chars().collect())
         .collect();

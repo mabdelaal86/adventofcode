@@ -2,11 +2,11 @@ use itertools::Itertools;
 
 use crate::common;
 
-pub fn main() -> i32 {
+pub fn main() -> u32 {
     process(common::read_file("data/day01.txt"))
 }
 
-fn process(lines: impl IntoIterator<Item=String>) -> i32 {
+fn process(lines: impl Iterator<Item=String>) -> u32 {
     let mut list1 = Vec::new();
     let mut list2 = Vec::new();
     // parse and sort the two lists
@@ -19,7 +19,7 @@ fn process(lines: impl IntoIterator<Item=String>) -> i32 {
     }
     // calc the absolute diff
     let res = list1
-        .iter().map(|x| {x * list2.iter().filter(|y| *y == x).count() as i32})
+        .iter().map(|x| {x * list2.iter().filter(|y| *y == x).count() as u32})
         // .map(|x| {println!("** {}", x); x})
         .sum();
 

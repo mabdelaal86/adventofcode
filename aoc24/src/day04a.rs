@@ -9,11 +9,11 @@ pub const DIRECTIONS: [(i32, i32); 8] = [
 
 const WORD: [char; 4] = ['X', 'M', 'A', 'S'];
 
-pub fn main() -> i32 {
+pub fn main() -> u32 {
     process(common::read_file("data/day04.txt"))
 }
 
-fn process(lines: impl IntoIterator<Item=String>) -> i32 {
+fn process(lines: impl Iterator<Item=String>) -> u32 {
     let matrix = common::to_matrix(lines);
 
     matrix.indices()
@@ -21,7 +21,7 @@ fn process(lines: impl IntoIterator<Item=String>) -> i32 {
         .sum()
 }
 
-fn count_word(data: &Matrix<char>, r: usize, c: usize) -> i32 {
+fn count_word(data: &Matrix<char>, r: usize, c: usize) -> u32 {
     if data.at(r, c) != &WORD[0] {
         return 0;
     }
@@ -30,7 +30,7 @@ fn count_word(data: &Matrix<char>, r: usize, c: usize) -> i32 {
         .map(|dir| {
             (1..WORD.len()).all(|i| is_xmas(data, r as i32, c as i32, i, dir))
         })
-        .map(|b| b as i32)
+        .map(|b| b as u32)
         .sum()
 }
 

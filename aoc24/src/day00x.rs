@@ -1,10 +1,10 @@
 use crate::common;
 
-pub fn main() -> i32 {
+pub fn main() -> u32 {
     process(common::read_file("data/day.txt"))
 }
 
-fn process(lines: impl IntoIterator<Item=String>) -> i32 {
+fn process(lines: impl Iterator<Item=String>) -> u32 {
     for line in lines {
         println!("{}", line);
     }
