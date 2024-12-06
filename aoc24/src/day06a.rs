@@ -1,5 +1,25 @@
 use std::collections::HashSet;
+use std::num;
+
 use crate::common;
+
+pub fn main() -> u32 {
+    process(common::read_file("data/day06.txt"))
+}
+
+fn process(lines: impl Iterator<Item=String>) -> u32 {
+    let map = common::to_matrix(lines);
+    let start_loc = map.find('^').expect("No starting location found");
+    let mut guard = Guard::new(start_loc, '^');
+    let mut visited: HashSet<common::Location> = HashSet::new();
+    visited.insert(start_loc);
+
+    while move_guard(&mut guard, &map) {
+        visited.insert(guard.location);
+    }
+
+    visited.len() as u32
+}
 
 struct Guard {
     location: common::Location,
@@ -11,11 +31,6 @@ impl Guard {
         Self { location, direction }
     }
 
-    // fn next_loc(self) -> common::Location {
-    //     let (dx, dy) = direction(self.direction);
-    //     self.location.moved_by(dx, dy)
-    // }
-
     fn turn_90(&mut self) {
         self.direction = match self.direction {
             '^' => '>',
@@ -25,29 +40,35 @@ impl Guard {
             _ => panic!("Invalid direction"),
         }
     }
-}
 
-fn direction(c: char) -> (i32, i32) {
-    match c {
-        '^' => (0, -1),
-        'v' => (0, 1),
-        '<' => (-1, 0),
-        '>' => (1, 0),
-        _ => panic!("Invalid direction"),
+    fn next_location(&self) -> Result<common::Location, num::TryFromIntError> {
+        let (dx, dy) = match self.direction {
+            '^' => (0, -1),
+            'v' => (0, 1),
+            '<' => (-1, 0),
+            '>' => (1, 0),
+            _ => panic!("Invalid direction"),
+        };
+
+        self.location.moved_by(dx, dy)
     }
 }
 
-pub fn main() -> u32 {
-    process(common::read_file("data/day06.txt"))
-}
+fn move_guard(guard: &mut Guard, map: &common::Matrix<char>) -> bool {
+    let Ok(new_loc) = guard.next_location() else {
+        return  false
+    };
+    if new_loc.x >= map.cols() || new_loc.y >= map.rows() {
+        return false;
+    }
 
-fn process(lines: impl Iterator<Item=String>) -> u32 {
-    let map = common::to_matrix(lines);
-    let start_loc = map.find('^').expect("No starting location found");
-    let mut visited: HashSet<common::Location> = HashSet::new();
-    visited.insert(start_loc);
+    if *map.at(&new_loc) == '#' {
+        guard.turn_90();
+    } else {
+        guard.location = new_loc;
+    }
 
-    0
+    true
 }
 
 #[cfg(test)]
@@ -69,6 +90,6 @@ mod tests {
             ......#...
         "}.lines().map(|l| l.to_string());
 
-        assert_eq!(process(lines), 0); // 41
+        assert_eq!(process(lines), 41);
     }
 }

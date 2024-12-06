@@ -69,7 +69,7 @@ pub fn to_matrix(lines: impl Iterator<Item = String>) -> Matrix<char> {
     Matrix::new(data)
 }
 
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
 pub struct Location {
     pub x: usize,
     pub y: usize,
