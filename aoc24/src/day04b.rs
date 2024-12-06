@@ -1,5 +1,5 @@
 use crate::common;
-use crate::common::Matrix;
+use crate::common::{Location, Matrix};
 
 pub const DIRECTIONS: [[(i32, i32); 2]; 2] = [
     [(-1, -1), (1,  1)], // left-up , right-down
@@ -14,24 +14,27 @@ fn process(lines: impl Iterator<Item=String>) -> u32 {
     let matrix = common::to_matrix(lines);
 
     matrix.indices()
-        .filter(|(r, c)| is_mas(&matrix, *r, *c))
+        .filter(|l| is_mas(&matrix, l))
         .count() as u32
 }
 
-fn is_mas(data: &Matrix<char>, r: usize, c: usize) -> bool {
-    if *data.at(r, c) != 'A' {
+fn is_mas(data: &Matrix<char>, loc: &common::Location) -> bool {
+    if *data.at(&loc) != 'A' {
         return false
     }
 
     DIRECTIONS.iter()
-        .map(|dir| get_ms(data, r as i32, c as i32, dir))
+        .map(|dir| get_ms(data, loc, dir))
         .all(|ms| ms == ['M', 'S'] || ms == ['S', 'M'])
 }
 
-fn get_ms(data: &Matrix<char>, r: i32, c: i32, dir: &[(i32, i32); 2]) -> [char; 2] {
+fn get_ms(data: &Matrix<char>, loc: &Location, dir: &[(i32, i32); 2]) -> [char; 2] {
     dir
-        .map(|(x, y)| (r + y, c + x))
-        .map(|(x, y)| *data.get(x as usize, y as usize).unwrap_or(&'.'))
+        .map(|(x, y)| {
+            let Ok(l) = loc.moved_by(x, y) else { return '.' };
+            if l.x >= data.cols() || l.y >= data.rows() { return '.' };
+            *data.at(&l)
+        })
 }
 
 #[cfg(test)]

@@ -17,28 +17,27 @@ fn process(lines: impl Iterator<Item=String>) -> u32 {
     let matrix = common::to_matrix(lines);
 
     matrix.indices()
-        .map(|(r, c)| count_word(&matrix, r, c))
+        .map(|l| count_word(&matrix, &l))
         .sum()
 }
 
-fn count_word(data: &Matrix<char>, r: usize, c: usize) -> u32 {
-    if data.at(r, c) != &WORD[0] {
+fn count_word(data: &Matrix<char>, loc: &common::Location) -> u32 {
+    if data.at(loc) != &WORD[0] {
         return 0;
     }
 
     DIRECTIONS.iter()
         .map(|dir| {
-            (1..WORD.len()).all(|i| is_xmas(data, r as i32, c as i32, i, dir))
+            (1..WORD.len()).all(|i| is_xmas(data, loc, i, dir))
         })
         .map(|b| b as u32)
         .sum()
 }
 
-fn is_xmas(data: &Matrix<char>, r: i32, c: i32, i: usize, dir: &(i32, i32)) -> bool {
-    let nr = r + dir.1 * i as i32;
-    let nc = c + dir.0 * i as i32;
+fn is_xmas(data: &Matrix<char>, loc: &common::Location, i: usize, dir: &(i32, i32)) -> bool {
+    let Ok(loc) = loc.moved_by(dir.0 * i as i32, dir.1 * i as i32) else { return false };
 
-    Some(&WORD[i]) == data.get(nr as usize, nc as usize)
+    Some(&WORD[i]) == data.get(&loc)
 }
 
 #[cfg(test)]
