@@ -2,8 +2,9 @@ use regex::Regex;
 
 use crate::common;
 
-pub fn main() -> u32 {
-    process(common::read_file("data/day03.txt"))
+pub fn main() {
+    let res = process(common::read_file("data/day03.txt"));
+    println!("res = {}", res);
 }
 
 fn process(lines: impl Iterator<Item = String>) -> u32 {

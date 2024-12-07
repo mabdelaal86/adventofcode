@@ -1,7 +1,11 @@
 use crate::common;
-use crate::common::Matrix;
 
-pub const DIRECTIONS: [(i32, i32); 8] = [
+pub fn main() {
+    let res = process(common::read_file("data/day04.txt"));
+    println!("res = {}", res);
+}
+
+const DIRECTIONS: [(i32, i32); 8] = [
     (-1, -1),
     (0, -1),
     (1, -1),
@@ -14,17 +18,13 @@ pub const DIRECTIONS: [(i32, i32); 8] = [
 
 const WORD: [char; 4] = ['X', 'M', 'A', 'S'];
 
-pub fn main() -> u32 {
-    process(common::read_file("data/day04.txt"))
-}
-
 fn process(lines: impl Iterator<Item = String>) -> u32 {
     let matrix = common::to_matrix(lines);
 
     matrix.indices().map(|l| count_word(&matrix, &l)).sum()
 }
 
-fn count_word(data: &Matrix<char>, loc: &common::Location) -> u32 {
+fn count_word(data: &common::Matrix<char>, loc: &common::Location) -> u32 {
     if data.at(loc) != &WORD[0] {
         return 0;
     }
@@ -36,7 +36,12 @@ fn count_word(data: &Matrix<char>, loc: &common::Location) -> u32 {
         .sum()
 }
 
-fn is_xmas(data: &Matrix<char>, loc: &common::Location, i: usize, dir: &(i32, i32)) -> bool {
+fn is_xmas(
+    data: &common::Matrix<char>,
+    loc: &common::Location,
+    i: usize,
+    dir: &(i32, i32),
+) -> bool {
     let Ok(loc) = loc.moved_by(dir.0 * i as i32, dir.1 * i as i32) else {
         return false;
     };

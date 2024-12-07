@@ -1,7 +1,8 @@
 use crate::common;
 
-pub fn main() -> u32 {
-    process(common::read_file("data/day.txt"))
+pub fn main() {
+    let res = process(common::read_file("data/day.txt"));
+    println!("res = {}", res);
 }
 
 fn process(lines: impl Iterator<Item = String>) -> u32 {

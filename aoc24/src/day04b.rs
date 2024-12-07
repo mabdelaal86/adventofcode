@@ -1,14 +1,14 @@
 use crate::common;
-use crate::common::{Location, Matrix};
 
-pub const DIRECTIONS: [[(i32, i32); 2]; 2] = [
+pub fn main() {
+    let res = process(common::read_file("data/day04.txt"));
+    println!("res = {}", res);
+}
+
+const DIRECTIONS: [[(i32, i32); 2]; 2] = [
     [(-1, -1), (1, 1)], // left-up , right-down
     [(-1, 1), (1, -1)], // left-down , right-up
 ];
-
-pub fn main() -> u32 {
-    process(common::read_file("data/day04.txt"))
-}
 
 fn process(lines: impl Iterator<Item = String>) -> u32 {
     let matrix = common::to_matrix(lines);
@@ -16,7 +16,7 @@ fn process(lines: impl Iterator<Item = String>) -> u32 {
     matrix.indices().filter(|l| is_mas(&matrix, l)).count() as u32
 }
 
-fn is_mas(data: &Matrix<char>, loc: &common::Location) -> bool {
+fn is_mas(data: &common::Matrix<char>, loc: &common::Location) -> bool {
     if *data.at(&loc) != 'A' {
         return false;
     }
@@ -27,7 +27,7 @@ fn is_mas(data: &Matrix<char>, loc: &common::Location) -> bool {
         .all(|ms| ms == ['M', 'S'] || ms == ['S', 'M'])
 }
 
-fn get_ms(data: &Matrix<char>, loc: &Location, dir: &[(i32, i32); 2]) -> [char; 2] {
+fn get_ms(data: &common::Matrix<char>, loc: &common::Location, dir: &[(i32, i32); 2]) -> [char; 2] {
     dir.map(|(x, y)| {
         let Ok(l) = loc.moved_by(x, y) else {
             return '.';

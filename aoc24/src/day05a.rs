@@ -3,8 +3,9 @@ use std::collections::HashMap;
 
 type PageRule = HashMap<u32, Vec<u32>>;
 
-pub fn main() -> u32 {
-    process(common::read_file("data/day05.txt"))
+pub fn main() {
+    let res = process(common::read_file("data/day05.txt"));
+    println!("res = {}", res);
 }
 
 fn process(lines: impl Iterator<Item = String>) -> u32 {
