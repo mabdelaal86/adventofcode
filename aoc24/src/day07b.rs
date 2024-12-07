@@ -31,10 +31,10 @@ fn is_possible(val: u128, equation: &Vec<u32>) -> bool {
     for i in 0..count {
         let mut test: u128 = equation[0] as u128;
         for j in 1..equation.len() {
-            test = match ops[operation(i, j, equation.len())] {
+            test = match operation(i, j, &ops) {
                 '+' => test + equation[j] as u128,
                 '*' => test * equation[j] as u128,
-                '|' => test + equation[j] as u128, // todo: fix this
+                '|' => concat_num(test, equation[j] as u128),
                 _ => panic!("Invalid char"),
             }
         }
@@ -46,14 +46,13 @@ fn is_possible(val: u128, equation: &Vec<u32>) -> bool {
     false
 }
 
-fn operation(i: usize, j: usize, eq_len: usize) -> usize {
-    // let bin = format!("{:0w$b}", i, w=eq_len - 1);
-    // let operations = bin
-    //     .chars()
-    //     .map(|c| c.to_digit(10).unwrap())
-    //     .map(|i| ops[i as usize])
-    //     .collect::<Vec<_>>();
-    1
+fn operation(i: usize, j: usize, ops: &[char]) -> char {
+    let x = (i / ops.len().pow(j as u32 - 1)) % ops.len();
+    ops[x]
+}
+
+fn concat_num(n1: u128, n2: u128) -> u128 {
+    n1 * 10_u128.pow(n2.to_string().len() as u32) + n2
 }
 
 #[cfg(test)]
