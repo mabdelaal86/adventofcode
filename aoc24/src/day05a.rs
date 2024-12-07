@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use crate::common;
+use std::collections::HashMap;
 
 type PageRule = HashMap<u32, Vec<u32>>;
 
@@ -7,7 +7,7 @@ pub fn main() -> u32 {
     process(common::read_file("data/day05.txt"))
 }
 
-fn process(lines: impl Iterator<Item=String>) -> u32 {
+fn process(lines: impl Iterator<Item = String>) -> u32 {
     let mut read_rules = true;
     // page : pages after
     let mut rules: PageRule = HashMap::new();
@@ -33,19 +33,24 @@ fn process_rule(rules: &mut PageRule, line: &str) {
     let (p1, p2) = line.split_once("|").unwrap();
     let (p1, p2) = (p1.parse::<u32>().unwrap(), p2.parse::<u32>().unwrap());
 
-    if !rules.contains_key(&p1) { rules.insert(p1, Vec::new()); }
-    if !rules.contains_key(&p2) { rules.insert(p2, Vec::new()); }
+    if !rules.contains_key(&p1) {
+        rules.insert(p1, Vec::new());
+    }
+    if !rules.contains_key(&p2) {
+        rules.insert(p2, Vec::new());
+    }
     rules.get_mut(&p1).unwrap().push(p2);
 }
 
 fn process_update(rules: &mut PageRule, line: &str) -> u32 {
-    let pages = line.split(",")
+    let pages = line
+        .split(",")
         .map(|p| p.parse::<u32>().unwrap())
         .collect::<Vec<u32>>();
 
-    for i in 0..pages.len()-1 {
+    for i in 0..pages.len() - 1 {
         let page_rule = rules.get(&pages[i]).unwrap();
-        if pages[i+1..].iter().any(|&p| !page_rule.contains(&p)) {
+        if pages[i + 1..].iter().any(|&p| !page_rule.contains(&p)) {
             return 0;
         }
     }
@@ -88,7 +93,9 @@ mod tests {
             75,97,47,61,53
             61,13,29
             97,13,75,29,47
-        "}.lines().map(|l| l.to_string());
+        "}
+        .lines()
+        .map(|l| l.to_string());
 
         assert_eq!(process(lines), 143);
     }

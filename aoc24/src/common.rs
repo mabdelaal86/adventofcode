@@ -5,9 +5,7 @@ use std::num;
 
 pub fn read_file(filename: &str) -> impl Iterator<Item = String> {
     let f = fs::File::open(filename).unwrap();
-    io::BufReader::new(f)
-        .lines()
-        .map(|l| l.unwrap())
+    io::BufReader::new(f).lines().map(|l| l.unwrap())
 }
 
 #[allow(unused)]
@@ -38,12 +36,13 @@ impl<T> Matrix<T> {
     }
 
     pub fn indices(&self) -> impl Iterator<Item = Location> + use<'_, T> {
-        (0..self.rows).flat_map(move |r| {
-            (0..self.cols).map(move |c| Location::new(c, r))
-        })
+        (0..self.rows).flat_map(move |r| (0..self.cols).map(move |c| Location::new(c, r)))
     }
 
-    pub fn find(&self, value: T) -> Option<Location> where T: PartialEq {
+    pub fn find(&self, value: T) -> Option<Location>
+    where
+        T: PartialEq,
+    {
         self.indices().find(|loc| self.at(loc) == &value)
     }
 
@@ -63,9 +62,7 @@ impl<T> Matrix<T> {
 }
 
 pub fn to_matrix(lines: impl Iterator<Item = String>) -> Matrix<char> {
-    let data = lines.into_iter()
-        .map(|l| l.chars().collect())
-        .collect();
+    let data = lines.into_iter().map(|l| l.chars().collect()).collect();
     Matrix::new(data)
 }
 

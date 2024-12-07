@@ -6,11 +6,12 @@ pub fn main() -> u32 {
     process(common::read_file("data/day02.txt"))
 }
 
-fn process(lines: impl Iterator<Item=String>) -> u32 {
+fn process(lines: impl Iterator<Item = String>) -> u32 {
     let mut safe_count = 0;
     // parse and sort the two lists
     for line in lines {
-        let values = line.split_whitespace()
+        let values = line
+            .split_whitespace()
             .map(|n| n.parse().unwrap())
             .collect_vec();
 
@@ -47,7 +48,9 @@ mod tests {
             1 3 2 4 5
             8 6 4 4 1
             1 3 6 7 9
-        "}.lines().map(|l| l.to_string());
+        "}
+        .lines()
+        .map(|l| l.to_string());
 
         assert_eq!(process(lines), 2);
     }

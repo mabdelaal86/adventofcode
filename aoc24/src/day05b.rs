@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use crate::common;
+use std::collections::HashMap;
 
 type PageRule = HashMap<u32, Vec<u32>>;
 
@@ -7,7 +7,7 @@ pub fn main() -> u32 {
     process(common::read_file("data/day05.txt"))
 }
 
-fn process(lines: impl Iterator<Item=String>) -> u32 {
+fn process(lines: impl Iterator<Item = String>) -> u32 {
     let mut read_rules = true;
     // page : pages before
     let mut rules: PageRule = HashMap::new();
@@ -33,8 +33,12 @@ fn process_rule(rules: &mut PageRule, line: &str) {
     let (p1, p2) = line.split_once("|").unwrap();
     let (p1, p2) = (p1.parse::<u32>().unwrap(), p2.parse::<u32>().unwrap());
 
-    if !rules.contains_key(&p1) { rules.insert(p1, Vec::new()); }
-    if !rules.contains_key(&p2) { rules.insert(p2, Vec::new()); }
+    if !rules.contains_key(&p1) {
+        rules.insert(p1, Vec::new());
+    }
+    if !rules.contains_key(&p2) {
+        rules.insert(p2, Vec::new());
+    }
     rules.get_mut(&p2).unwrap().push(p1);
 }
 
@@ -51,15 +55,13 @@ fn process_update(rules: &mut PageRule, line: &str) -> u32 {
 }
 
 fn parse_update(line: &str) -> Vec<u32> {
-    line.split(",")
-        .map(|p| p.parse::<u32>().unwrap())
-        .collect()
+    line.split(",").map(|p| p.parse::<u32>().unwrap()).collect()
 }
 
 fn is_valid_update(rules: &PageRule, pages: &[u32]) -> bool {
-    for i in 0..pages.len()-1 {
+    for i in 0..pages.len() - 1 {
         let page_rule = rules.get(&pages[i]).unwrap();
-        if pages[i+1..].iter().any(|&p| page_rule.contains(&p)) {
+        if pages[i + 1..].iter().any(|&p| page_rule.contains(&p)) {
             return false;
         }
     }
@@ -69,9 +71,10 @@ fn is_valid_update(rules: &PageRule, pages: &[u32]) -> bool {
 
 fn rearrange_pages(rules: &PageRule, pages: &mut Vec<u32>) {
     let mut i: usize = 0;
-    while i < pages.len()-1 {
+    while i < pages.len() - 1 {
         let pages_before = &rules.get(&pages[i]).unwrap();
-        let wrong_pages = pages[i+1..].iter()
+        let wrong_pages = pages[i + 1..]
+            .iter()
             .filter(|&p| pages_before.contains(p))
             .copied()
             .collect::<Vec<u32>>();
@@ -121,7 +124,9 @@ mod tests {
             75,97,47,61,53
             61,13,29
             97,13,75,29,47
-        "}.lines().map(|l| l.to_string());
+        "}
+        .lines()
+        .map(|l| l.to_string());
 
         // assert_eq!(process(lines), 47+13+75);
         assert_eq!(process(lines), 123);

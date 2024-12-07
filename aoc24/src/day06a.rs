@@ -7,7 +7,7 @@ pub fn main() -> u32 {
     process(common::read_file("data/day06.txt"))
 }
 
-fn process(lines: impl Iterator<Item=String>) -> u32 {
+fn process(lines: impl Iterator<Item = String>) -> u32 {
     let map = common::to_matrix(lines);
     let start_loc = map.find('^').expect("No starting location found");
     let mut guard = Guard::new(start_loc, '^');
@@ -28,7 +28,10 @@ struct Guard {
 
 impl Guard {
     fn new(location: common::Location, direction: char) -> Self {
-        Self { location, direction }
+        Self {
+            location,
+            direction,
+        }
     }
 
     fn turn_90(&mut self) {
@@ -56,7 +59,7 @@ impl Guard {
 
 fn move_guard(guard: &mut Guard, map: &common::Matrix<char>) -> bool {
     let Ok(new_loc) = guard.next_location() else {
-        return  false
+        return false;
     };
     if new_loc.x >= map.cols() || new_loc.y >= map.rows() {
         return false;
@@ -88,7 +91,9 @@ mod tests {
             ........#.
             #.........
             ......#...
-        "}.lines().map(|l| l.to_string());
+        "}
+        .lines()
+        .map(|l| l.to_string());
 
         assert_eq!(process(lines), 41);
     }
