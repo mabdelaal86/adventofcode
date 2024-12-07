@@ -8,18 +8,18 @@ pub fn main() {
     println!("res = {}", res);
 }
 
-fn process(lines: impl Iterator<Item = String>) -> u32 {
+fn process(lines: impl Iterator<Item = String>) -> usize {
     let map = common::to_matrix(lines);
     let start_loc = map.find('^').expect("No starting location found");
     let mut guard = Guard::new(start_loc, '^');
     let mut visited: HashSet<common::Location> = HashSet::new();
-    visited.insert(start_loc);
+    visited.insert(guard.location);
 
     while move_guard(&mut guard, &map) {
         visited.insert(guard.location);
     }
 
-    visited.len() as u32
+    visited.len()
 }
 
 struct Guard {

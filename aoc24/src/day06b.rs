@@ -1,6 +1,5 @@
 use std::collections::HashSet;
 use std::num;
-
 use crate::common;
 
 pub fn main() {
@@ -8,20 +7,17 @@ pub fn main() {
     println!("res = {}", res);
 }
 
-fn process(lines: impl Iterator<Item = String>) -> u32 {
-    let map = common::to_matrix(lines);
+fn process(lines: impl Iterator<Item = String>) -> usize {
+    let mut map = common::to_matrix(lines);
     let start_loc = map.find('^').expect("No starting location found");
     let mut guard = Guard::new(start_loc, '^');
-    let mut visited: HashSet<common::Location> = HashSet::new();
-    visited.insert(start_loc);
 
-    while move_guard(&mut guard, &map) {
-        visited.insert(guard.location);
-    }
+    let visited = visited_locations(&map, &mut guard);
 
-    visited.len() as u32
+    visited.iter().filter(|l| can_make_loop(*l, &mut map)).count()
 }
 
+#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
 struct Guard {
     location: common::Location,
     direction: char,
@@ -66,13 +62,52 @@ fn move_guard(guard: &mut Guard, map: &common::Matrix<char>) -> bool {
         return false;
     }
 
-    if *map.at(&new_loc) == '#' {
+    if ['#', 'O'].contains(map.at(&new_loc)) {
         guard.turn_90();
     } else {
         guard.location = new_loc;
     }
 
     true
+}
+
+fn visited_locations(map: &common::Matrix<char>, mut guard: &mut Guard) -> HashSet<common::Location> {
+    let mut visited: HashSet<common::Location> = HashSet::new();
+    visited.insert(guard.location);
+
+    while move_guard(&mut guard, &map) {
+        visited.insert(guard.location);
+    }
+
+    visited
+}
+
+fn can_make_loop(loc: &common::Location, map: &mut common::Matrix<char>) -> bool {
+    if *map.at(&loc) == '^' {
+        return false;
+    }
+    
+    map.replace(loc, 'O');
+    let res = is_loop(map);
+    map.replace(loc, '.');
+    
+    res
+}
+
+fn is_loop(map: &common::Matrix<char>) -> bool {
+    let start_loc = map.find('^').expect("No starting location found");
+    let mut guard = Guard::new(start_loc, '^');
+    let mut visited: HashSet<Guard> = HashSet::new();
+    visited.insert(guard);
+
+    while move_guard(&mut guard, &map) {
+        if visited.contains(&guard) {
+            return true;
+        }
+        visited.insert(guard);
+    }
+
+    false
 }
 
 #[cfg(test)]
@@ -96,6 +131,6 @@ mod tests {
         .lines()
         .map(|l| l.to_string());
 
-        assert_eq!(process(lines), 41);
+        assert_eq!(process(lines), 6);
     }
 }

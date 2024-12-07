@@ -10,10 +10,10 @@ const DIRECTIONS: [[(i32, i32); 2]; 2] = [
     [(-1, 1), (1, -1)], // left-down , right-up
 ];
 
-fn process(lines: impl Iterator<Item = String>) -> u32 {
+fn process(lines: impl Iterator<Item = String>) -> usize {
     let matrix = common::to_matrix(lines);
 
-    matrix.indices().filter(|l| is_mas(&matrix, l)).count() as u32
+    matrix.indices().filter(|l| is_mas(&matrix, l)).count()
 }
 
 fn is_mas(data: &common::Matrix<char>, loc: &common::Location) -> bool {

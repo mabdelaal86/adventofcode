@@ -35,6 +35,10 @@ impl<T> Matrix<T> {
         &self.data[loc.y][loc.x]
     }
 
+    pub fn replace(&mut self, loc: &Location, value: T) {
+        self.data[loc.y][loc.x] = value;
+    }
+
     pub fn indices(&self) -> impl Iterator<Item = Location> + use<'_, T> {
         (0..self.rows).flat_map(move |r| (0..self.cols).map(move |c| Location::new(c, r)))
     }
