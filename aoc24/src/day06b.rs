@@ -1,30 +1,34 @@
 use std::collections::HashSet;
 use std::num;
-use crate::common;
+
+use crate::common::*;
 
 pub fn main() {
-    let res = process(common::read_file("data/day06.txt"));
+    let res = process(read_file("data/day06.txt"));
     println!("res = {}", res);
 }
 
 fn process(lines: impl Iterator<Item = String>) -> usize {
-    let mut map = common::to_matrix(lines);
+    let mut map = to_matrix(lines);
     let start_loc = map.find('^').expect("No starting location found");
     let mut guard = Guard::new(start_loc, '^');
 
     let visited = visited_locations(&map, &mut guard);
 
-    visited.iter().filter(|l| can_make_loop(*l, &mut map)).count()
+    visited
+        .iter()
+        .filter(|l| can_make_loop(*l, &mut map))
+        .count()
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
 struct Guard {
-    location: common::Location,
+    location: Location,
     direction: char,
 }
 
 impl Guard {
-    fn new(location: common::Location, direction: char) -> Self {
+    fn new(location: Location, direction: char) -> Self {
         Self {
             location,
             direction,
@@ -41,20 +45,20 @@ impl Guard {
         }
     }
 
-    fn next_location(&self) -> Result<common::Location, num::TryFromIntError> {
-        let (dx, dy) = match self.direction {
-            '^' => (0, -1),
-            'v' => (0, 1),
-            '<' => (-1, 0),
-            '>' => (1, 0),
+    fn next_location(&self) -> Result<Location, num::TryFromIntError> {
+        let d = match self.direction {
+            '^' => Distance::new(0, -1),
+            'v' => Distance::new(0, 1),
+            '<' => Distance::new(-1, 0),
+            '>' => Distance::new(1, 0),
             _ => panic!("Invalid direction"),
         };
 
-        self.location.moved_by(dx, dy)
+        self.location.moved_by(d)
     }
 }
 
-fn move_guard(guard: &mut Guard, map: &common::Matrix<char>) -> bool {
+fn move_guard(guard: &mut Guard, map: &Matrix<char>) -> bool {
     let Ok(new_loc) = guard.next_location() else {
         return false;
     };
@@ -71,8 +75,8 @@ fn move_guard(guard: &mut Guard, map: &common::Matrix<char>) -> bool {
     true
 }
 
-fn visited_locations(map: &common::Matrix<char>, mut guard: &mut Guard) -> HashSet<common::Location> {
-    let mut visited: HashSet<common::Location> = HashSet::new();
+fn visited_locations(map: &Matrix<char>, mut guard: &mut Guard) -> HashSet<Location> {
+    let mut visited: HashSet<Location> = HashSet::new();
     visited.insert(guard.location);
 
     while move_guard(&mut guard, &map) {
@@ -82,19 +86,19 @@ fn visited_locations(map: &common::Matrix<char>, mut guard: &mut Guard) -> HashS
     visited
 }
 
-fn can_make_loop(loc: &common::Location, map: &mut common::Matrix<char>) -> bool {
+fn can_make_loop(loc: &Location, map: &mut Matrix<char>) -> bool {
     if *map.at(&loc) == '^' {
         return false;
     }
-    
+
     map.replace(loc, 'O');
     let res = is_loop(map);
     map.replace(loc, '.');
-    
+
     res
 }
 
-fn is_loop(map: &common::Matrix<char>) -> bool {
+fn is_loop(map: &Matrix<char>) -> bool {
     let start_loc = map.find('^').expect("No starting location found");
     let mut guard = Guard::new(start_loc, '^');
     let mut visited: HashSet<Guard> = HashSet::new();

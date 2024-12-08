@@ -1,18 +1,18 @@
 use std::collections::HashSet;
 use std::num;
 
-use crate::common;
+use crate::common::*;
 
 pub fn main() {
-    let res = process(common::read_file("data/day06.txt"));
+    let res = process(read_file("data/day06.txt"));
     println!("res = {}", res);
 }
 
 fn process(lines: impl Iterator<Item = String>) -> usize {
-    let map = common::to_matrix(lines);
+    let map = to_matrix(lines);
     let start_loc = map.find('^').expect("No starting location found");
     let mut guard = Guard::new(start_loc, '^');
-    let mut visited: HashSet<common::Location> = HashSet::new();
+    let mut visited: HashSet<Location> = HashSet::new();
     visited.insert(guard.location);
 
     while move_guard(&mut guard, &map) {
@@ -23,12 +23,12 @@ fn process(lines: impl Iterator<Item = String>) -> usize {
 }
 
 struct Guard {
-    location: common::Location,
+    location: Location,
     direction: char,
 }
 
 impl Guard {
-    fn new(location: common::Location, direction: char) -> Self {
+    fn new(location: Location, direction: char) -> Self {
         Self {
             location,
             direction,
@@ -45,20 +45,20 @@ impl Guard {
         }
     }
 
-    fn next_location(&self) -> Result<common::Location, num::TryFromIntError> {
-        let (dx, dy) = match self.direction {
-            '^' => (0, -1),
-            'v' => (0, 1),
-            '<' => (-1, 0),
-            '>' => (1, 0),
+    fn next_location(&self) -> Result<Location, num::TryFromIntError> {
+        let d = match self.direction {
+            '^' => Distance::new(0, -1),
+            'v' => Distance::new(0, 1),
+            '<' => Distance::new(-1, 0),
+            '>' => Distance::new(1, 0),
             _ => panic!("Invalid direction"),
         };
 
-        self.location.moved_by(dx, dy)
+        self.location.moved_by(d)
     }
 }
 
-fn move_guard(guard: &mut Guard, map: &common::Matrix<char>) -> bool {
+fn move_guard(guard: &mut Guard, map: &Matrix<char>) -> bool {
     let Ok(new_loc) = guard.next_location() else {
         return false;
     };

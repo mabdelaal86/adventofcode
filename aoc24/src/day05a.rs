@@ -1,10 +1,11 @@
-use crate::common;
 use std::collections::HashMap;
+
+use crate::common::*;
 
 type PageRule = HashMap<u32, Vec<u32>>;
 
 pub fn main() {
-    let res = process(common::read_file("data/day05.txt"));
+    let res = process(read_file("data/day05.txt"));
     println!("res = {}", res);
 }
 

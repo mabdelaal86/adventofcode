@@ -1,9 +1,9 @@
 use itertools::Itertools;
 
-use crate::common;
+use crate::common::*;
 
 pub fn main() {
-    let res = process(common::read_file("data/day02.txt"));
+    let res = process(read_file("data/day02.txt"));
     println!("res = {}", res);
 }
 

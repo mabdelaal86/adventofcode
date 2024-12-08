@@ -1,9 +1,9 @@
 use regex::Regex;
 
-use crate::common;
+use crate::common::*;
 
 pub fn main() {
-    let res = process(common::read_file("data/day03.txt"));
+    let res = process(read_file("data/day03.txt"));
     println!("res = {}", res);
 }
 

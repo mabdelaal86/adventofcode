@@ -1,7 +1,7 @@
-use crate::common;
+use crate::common::*;
 
 pub fn main() {
-    let res = process(common::read_file("data/day.txt"));
+    let res = process(read_file("data/day.txt"));
     println!("res = {}", res);
 }
 
