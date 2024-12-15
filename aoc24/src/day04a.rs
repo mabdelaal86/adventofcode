@@ -37,7 +37,7 @@ fn count_word(data: &Matrix<char>, loc: &Location) -> u32 {
 }
 
 fn is_xmas(data: &Matrix<char>, loc: &Location, i: usize, dir: Distance) -> bool {
-    let Ok(loc) = loc.moved_by(dir * i as i32) else {
+    let Ok(loc) = moved_by(*loc, dir * i as i32) else {
         return false;
     };
 

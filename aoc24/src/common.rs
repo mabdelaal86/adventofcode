@@ -3,7 +3,7 @@ use std::fs;
 use std::io;
 use std::io::prelude::*;
 use std::num;
-use std::ops;
+use euclid;
 
 pub fn read_lines(filename: &str) -> impl Iterator<Item = String> {
     let f = fs::File::open(filename).unwrap();
@@ -21,6 +21,24 @@ pub fn read_all(filename: &str) -> String {
 pub fn log_value<T: fmt::Debug>(value: T) -> T {
     println!("** {:?}", value);
     value
+}
+
+pub type Location = euclid::default::Point2D<usize>;
+
+pub type Distance = euclid::default::Vector2D<i32>;
+
+pub fn moved_by(location: Location, distance: Distance) -> Result<Location, num::TryFromIntError> {
+    Ok(Location::new(
+        usize::try_from(location.x as i32 + distance.x)?,
+        usize::try_from(location.y as i32 + distance.y)?,
+    ))
+}
+
+pub fn distance_to(location: Location, other: Location) -> Result<Distance, num::TryFromIntError> {
+    Ok(Distance::new(
+        i32::try_from(location.x.abs_diff(other.x))?,
+        i32::try_from(location.y.abs_diff(other.y))?,
+    ))
 }
 
 pub struct Matrix<T> {
@@ -77,81 +95,4 @@ impl<T> Matrix<T> {
 pub fn to_matrix(lines: impl Iterator<Item = String>) -> Matrix<char> {
     let data = lines.into_iter().map(|l| l.chars().collect()).collect();
     Matrix::new(data)
-}
-
-#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
-pub struct Location {
-    pub x: usize,
-    pub y: usize,
-}
-
-impl Location {
-    pub const fn new(x: usize, y: usize) -> Self {
-        Self { x, y }
-    }
-
-    pub fn moved_by(&self, distance: Distance) -> Result<Self, num::TryFromIntError> {
-        Ok(Self {
-            x: usize::try_from(self.x as i32 + distance.dx)?,
-            y: usize::try_from(self.y as i32 + distance.dy)?,
-        })
-    }
-
-    pub fn distance_to(&self, other: Location) -> Result<Distance, num::TryFromIntError> {
-        Ok(Distance::new(
-            i32::try_from(self.x.abs_diff(other.x))?,
-            i32::try_from(self.y.abs_diff(other.y))?,
-        ))
-    }
-}
-
-impl fmt::Display for Location {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "({}, {})", self.x, self.y)
-    }
-}
-
-impl ops::Sub for Location {
-    type Output = Distance;
-
-    fn sub(self, rhs: Self) -> Self::Output {
-        Distance::new(
-            i32::try_from(self.x).unwrap() - i32::try_from(rhs.x).unwrap(),
-            i32::try_from(self.y).unwrap() - i32::try_from(rhs.y).unwrap(),
-        )
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
-pub struct Distance {
-    pub dx: i32,
-    pub dy: i32,
-}
-
-impl Distance {
-    pub const fn new(dx: i32, dy: i32) -> Self {
-        Self { dx, dy }
-    }
-}
-
-impl fmt::Display for Distance {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "({}, {})", self.dx, self.dy)
-    }
-}
-
-impl ops::Mul<i32> for Distance {
-    type Output = Self;
-
-    fn mul(self, scale: i32) -> Self::Output {
-        Self::new(self.dx * scale, self.dy * scale)
-    }
-}
-
-impl ops::Neg for Distance {
-    type Output = Self;
-
-    fn neg(self) -> Self::Output {
-        Self::new(-self.dx, -self.dy)
-    }
 }

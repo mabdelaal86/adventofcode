@@ -70,11 +70,11 @@ fn get_antinodes(map: &Map) -> HashSet<Location> {
 fn get_antinode(freq1: Location, freq2: Location, cols: usize, rows: usize) -> Vec<Location> {
     let mut res: Vec<Location> = Vec::new();
 
-    let dis = freq2 - freq1;
+    let dis = freq2.to_i32() - freq1.to_i32();
 
     let mut i = 1;
     loop {
-        let Ok(l) = freq1.moved_by(dis * -i) else {
+        let Ok(l) = moved_by(freq1, dis * -i) else {
             break;
         };
         if l.x >= cols || l.y >= rows {
@@ -86,7 +86,7 @@ fn get_antinode(freq1: Location, freq2: Location, cols: usize, rows: usize) -> V
 
     i = 1;
     loop {
-        let Ok(l) = freq2.moved_by(dis * i) else {
+        let Ok(l) = moved_by(freq2, dis * i) else {
             break;
         };
         if l.x >= cols || l.y >= rows {

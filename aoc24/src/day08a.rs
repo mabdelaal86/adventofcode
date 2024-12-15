@@ -69,11 +69,11 @@ fn get_antinodes(map: &Map) -> HashSet<Location> {
 fn get_antinode(freq1: Location, freq2: Location) -> Vec<Location> {
     let mut res: Vec<Location> = Vec::new();
 
-    let dis = freq1.distance_to(freq2).unwrap();
-    let min_x = freq1.x.min(freq2.x) as i32 - dis.dx;
-    let min_y = freq1.y.min(freq2.y) as i32 - dis.dy;
-    let max_x = freq1.x.max(freq2.x) + dis.dx as usize;
-    let max_y = freq1.y.max(freq2.y) + dis.dy as usize;
+    let dis = distance_to(freq1, freq2).unwrap();
+    let min_x = freq1.x.min(freq2.x) as i32 - dis.x;
+    let min_y = freq1.y.min(freq2.y) as i32 - dis.y;
+    let max_x = freq1.x.max(freq2.x) + dis.x as usize;
+    let max_y = freq1.y.max(freq2.y) + dis.y as usize;
 
     if freq1.x <= freq2.x && freq1.y <= freq2.y {
         res.push(Location::new(max_x, max_y));

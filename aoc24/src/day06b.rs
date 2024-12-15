@@ -54,7 +54,7 @@ impl Guard {
             _ => panic!("Invalid direction"),
         };
 
-        self.location.moved_by(d)
+        moved_by(self.location, d)
     }
 }
 
