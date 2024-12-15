@@ -3,8 +3,8 @@ use std::num;
 
 use crate::common::*;
 
-pub fn main() {
-    let res = process(read_file("data/day06.txt"));
+pub fn main(data_file: &str) {
+    let res = process(read_lines(data_file));
     println!("res = {}", res);
 }
 

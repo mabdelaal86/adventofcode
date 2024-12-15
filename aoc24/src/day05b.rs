@@ -4,8 +4,8 @@ use crate::common::*;
 
 type PageRule = HashMap<u32, Vec<u32>>;
 
-pub fn main() {
-    let res = process(read_file("data/day05.txt"));
+pub fn main(data_file: &str) {
+    let res = process(read_lines(data_file));
     println!("res = {}", res);
 }
 
