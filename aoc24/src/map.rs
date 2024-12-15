@@ -1,27 +1,6 @@
-use std::fmt;
-use std::fs;
-use std::io;
-use std::io::prelude::*;
 use std::num;
+
 use euclid;
-
-pub fn read_lines(filename: &str) -> impl Iterator<Item = String> {
-    let f = fs::File::open(filename).unwrap();
-    io::BufReader::new(f).lines().map(|l| l.unwrap())
-}
-
-pub fn read_all(filename: &str) -> String {
-    let mut f = fs::File::open(filename).unwrap();
-    let mut buffer = String::new();
-    f.read_to_string(&mut buffer).unwrap();
-    buffer
-}
-
-#[allow(unused)]
-pub fn log_value<T: fmt::Debug>(value: T) -> T {
-    println!("** {:?}", value);
-    value
-}
 
 pub type Location = euclid::default::Point2D<usize>;
 

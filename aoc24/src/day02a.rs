@@ -1,13 +1,6 @@
 use itertools::Itertools;
 
-use crate::common::*;
-
-pub fn main(data_file: &str) {
-    let res = process(read_lines(data_file));
-    println!("res = {}", res);
-}
-
-fn process(lines: impl Iterator<Item = String>) -> u32 {
+pub fn process(lines: impl Iterator<Item = String>) -> u32 {
     let mut safe_count = 0;
     // parse and sort the two lists
     for line in lines {
@@ -39,9 +32,10 @@ fn is_safe(values: &Vec<i32>) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::data::*;
 
     #[test]
-    fn test_process() {
+    fn test_example() {
         let lines = indoc::indoc! {"
             7 6 4 2 1
             1 2 7 8 9
@@ -54,5 +48,10 @@ mod tests {
         .map(|l| l.to_string());
 
         assert_eq!(process(lines), 2);
+    }
+
+    #[test]
+    fn test_data() {
+        assert_eq!(process(read_lines(2)), 442);
     }
 }

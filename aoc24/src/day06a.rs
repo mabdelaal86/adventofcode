@@ -1,14 +1,9 @@
 use std::collections::HashSet;
 use std::num;
 
-use crate::common::*;
+use crate::map::*;
 
-pub fn main(data_file: &str) {
-    let res = process(read_lines(data_file));
-    println!("res = {}", res);
-}
-
-fn process(lines: impl Iterator<Item = String>) -> usize {
+pub fn process(lines: impl Iterator<Item = String>) -> usize {
     let map = to_matrix(lines);
     let start_loc = map.find('^').expect("No starting location found");
     let mut guard = Guard::new(start_loc, '^');
@@ -78,9 +73,10 @@ fn move_guard(guard: &mut Guard, map: &Matrix<char>) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::data::*;
 
     #[test]
-    fn test_process() {
+    fn test_example() {
         let lines = indoc::indoc! {"
             ....#.....
             .........#
@@ -97,5 +93,10 @@ mod tests {
         .map(|l| l.to_string());
 
         assert_eq!(process(lines), 41);
+    }
+
+    #[test]
+    fn test_data() {
+        assert_eq!(process(read_lines(6)), 4826);
     }
 }

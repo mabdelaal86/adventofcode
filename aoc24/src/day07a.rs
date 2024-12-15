@@ -1,11 +1,4 @@
-use crate::common::*;
-
-pub fn main(data_file: &str) {
-    let res = process(read_lines(data_file));
-    println!("res = {}", res);
-}
-
-fn process(lines: impl Iterator<Item = String>) -> u128 {
+pub fn process(lines: impl Iterator<Item = String>) -> u128 {
     lines
         .map(|l| parse_line(l.as_str()))
         .filter(|(val, equation)| is_possible(*val, equation))
@@ -55,9 +48,10 @@ fn is_possible(val: u128, equation: &Vec<u32>) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::data::*;
 
     #[test]
-    fn test_process() {
+    fn test_example() {
         let lines = indoc::indoc! {"
             190: 10 19
             3267: 81 40 27
@@ -73,5 +67,10 @@ mod tests {
         .map(|l| l.to_string());
 
         assert_eq!(process(lines), 3749);
+    }
+
+    #[test]
+    fn test_data() {
+        assert_eq!(process(read_lines(7)), 12839601725877);
     }
 }

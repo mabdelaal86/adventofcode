@@ -1,15 +1,8 @@
 use std::collections::HashMap;
 
-use crate::common::*;
-
 type PageRule = HashMap<u32, Vec<u32>>;
 
-pub fn main(data_file: &str) {
-    let res = process(read_lines(data_file));
-    println!("res = {}", res);
-}
-
-fn process(lines: impl Iterator<Item = String>) -> u32 {
+pub fn process(lines: impl Iterator<Item = String>) -> u32 {
     let mut read_rules = true;
     // page : pages after
     let mut rules: PageRule = HashMap::new();
@@ -63,9 +56,10 @@ fn process_update(rules: &mut PageRule, line: &str) -> u32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::data::*;
 
     #[test]
-    fn test_process() {
+    fn test_example() {
         let lines = indoc::indoc! {"
             47|53
             97|13
@@ -100,5 +94,10 @@ mod tests {
         .map(|l| l.to_string());
 
         assert_eq!(process(lines), 143);
+    }
+
+    #[test]
+    fn test_data() {
+        assert_eq!(process(read_lines(5)), 5087);
     }
 }

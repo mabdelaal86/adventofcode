@@ -1,9 +1,4 @@
-use crate::common::*;
-
-pub fn main(data_file: &str) {
-    let res = process(read_lines(data_file));
-    println!("res = {}", res);
-}
+use crate::map::*;
 
 const DIRECTIONS: [Distance; 8] = [
     Distance::new(-1, -1),
@@ -18,7 +13,7 @@ const DIRECTIONS: [Distance; 8] = [
 
 const WORD: [char; 4] = ['X', 'M', 'A', 'S'];
 
-fn process(lines: impl Iterator<Item = String>) -> u32 {
+pub fn process(lines: impl Iterator<Item = String>) -> u32 {
     let matrix = to_matrix(lines);
 
     matrix.indices().map(|l| count_word(&matrix, &l)).sum()
@@ -47,9 +42,10 @@ fn is_xmas(data: &Matrix<char>, loc: &Location, i: usize, dir: Distance) -> bool
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::data::*;
 
     #[test]
-    fn test_process1() {
+    fn test_example_1() {
         let lines = indoc::indoc! {"
             ..X...
             .SAMX.
@@ -64,7 +60,7 @@ mod tests {
     }
 
     #[test]
-    fn test_process2() {
+    fn test_example_2() {
         let lines = indoc::indoc! {"
             MMMSXXMASM
             MSAMXMSMSA
@@ -81,5 +77,10 @@ mod tests {
         .map(|l| l.to_string());
 
         assert_eq!(process(lines), 18);
+    }
+
+    #[test]
+    fn test_data() {
+        assert_eq!(process(read_lines(4)), 2458);
     }
 }

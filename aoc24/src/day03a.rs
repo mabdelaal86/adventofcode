@@ -1,13 +1,6 @@
 use regex::Regex;
 
-use crate::common::*;
-
-pub fn main(data_file: &str) {
-    let res = process(read_lines(data_file));
-    println!("res = {}", res);
-}
-
-fn process(lines: impl Iterator<Item = String>) -> u32 {
+pub fn process(lines: impl Iterator<Item = String>) -> u32 {
     let mut res = 0;
     let re = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
     for line in lines {
@@ -22,9 +15,10 @@ fn process(lines: impl Iterator<Item = String>) -> u32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::data::*;
 
     #[test]
-    fn test_process() {
+    fn test_example() {
         let lines = indoc::indoc! {"
             xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))
         "}
@@ -32,5 +26,10 @@ mod tests {
         .map(|l| l.to_string());
 
         assert_eq!(process(lines), 161);
+    }
+
+    #[test]
+    fn test_data() {
+        assert_eq!(process(read_lines(3)), 181345830);
     }
 }

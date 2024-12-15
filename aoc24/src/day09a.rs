@@ -1,11 +1,4 @@
-use crate::common::*;
-
-pub fn main(data_file: &str) {
-    let res = process(read_all(data_file));
-    println!("res = {}", res);
-}
-
-fn process(data: String) -> u32 {
+pub fn process(data: String) -> u32 {
     println!("{}", data);
 
     0
@@ -14,11 +7,17 @@ fn process(data: String) -> u32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::data::*;
 
     #[test]
-    fn test_process() {
+    fn test_example() {
         let data = String::from("");
 
         assert_eq!(process(data), 0);
+    }
+
+    #[test]
+    fn test_data() {
+        assert_eq!(process(read_all(9)), 0);
     }
 }

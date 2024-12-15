@@ -1,13 +1,6 @@
 use itertools::Itertools;
 
-use crate::common::*;
-
-pub fn main(data_file: &str) {
-    let res = process(read_lines(data_file));
-    println!("res = {}", res);
-}
-
-fn process(lines: impl Iterator<Item = String>) -> u32 {
+pub fn process(lines: impl Iterator<Item = String>) -> u32 {
     let mut list1 = Vec::new();
     let mut list2 = Vec::new();
     // parse and sort the two lists
@@ -36,9 +29,10 @@ fn process(lines: impl Iterator<Item = String>) -> u32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::data::*;
 
     #[test]
-    fn test_process() {
+    fn test_example() {
         let lines = indoc::indoc! {"
             3   4
             4   3
@@ -51,5 +45,10 @@ mod tests {
         .map(|l| l.to_string());
 
         assert_eq!(process(lines), 11);
+    }
+
+    #[test]
+    fn test_data() {
+        assert_eq!(process(read_lines(1)), 1590491);
     }
 }

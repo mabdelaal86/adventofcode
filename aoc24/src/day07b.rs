@@ -1,11 +1,4 @@
-use crate::common::*;
-
-pub fn main(data_file: &str) {
-    let res = process(read_lines(data_file));
-    println!("res = {}", res);
-}
-
-fn process(lines: impl Iterator<Item = String>) -> u128 {
+pub fn process(lines: impl Iterator<Item = String>) -> u128 {
     lines
         .map(|l| parse_line(l.as_str()))
         .filter(|(val, equation)| is_possible(*val, equation))
@@ -58,9 +51,10 @@ fn concat_num(n1: u128, n2: u128) -> u128 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::data::*;
 
     #[test]
-    fn test_process() {
+    fn test_example() {
         let lines = indoc::indoc! {"
             190: 10 19
             3267: 81 40 27
@@ -76,5 +70,10 @@ mod tests {
         .map(|l| l.to_string());
 
         assert_eq!(process(lines), 11387);
+    }
+
+    #[test]
+    fn test_data() {
+        assert_eq!(process(read_lines(7)), 149956401519484);
     }
 }

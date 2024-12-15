@@ -1,9 +1,4 @@
-use crate::common::*;
-
-pub fn main(data_file: &str) {
-    let res = process(read_lines(data_file));
-    println!("res = {}", res);
-}
+use crate::map::*;
 
 const DIRECTIONS: [[Distance; 2]; 2] = [
     [
@@ -16,7 +11,7 @@ const DIRECTIONS: [[Distance; 2]; 2] = [
     ],
 ];
 
-fn process(lines: impl Iterator<Item = String>) -> usize {
+pub fn process(lines: impl Iterator<Item = String>) -> usize {
     let matrix = to_matrix(lines);
 
     matrix.indices().filter(|l| is_mas(&matrix, l)).count()
@@ -48,9 +43,10 @@ fn get_ms(data: &Matrix<char>, loc: &Location, dir: &[Distance; 2]) -> [char; 2]
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::data::*;
 
     #[test]
-    fn test_process1() {
+    fn test_example_1() {
         let lines = indoc::indoc! {"
             M.S
             .A.
@@ -63,7 +59,7 @@ mod tests {
     }
 
     #[test]
-    fn test_process2() {
+    fn test_example_2() {
         let lines = indoc::indoc! {"
             .M.S......
             ..A..MSMS.
@@ -80,5 +76,10 @@ mod tests {
         .map(|l| l.to_string());
 
         assert_eq!(process(lines), 9);
+    }
+
+    #[test]
+    fn test_data() {
+        assert_eq!(process(read_lines(4)), 1945);
     }
 }

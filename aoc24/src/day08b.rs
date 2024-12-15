@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
-use crate::common::*;
+use crate::map::*;
 
 struct Map {
     frequencies: HashMap<char, Vec<Location>>,
@@ -8,12 +8,7 @@ struct Map {
     rows: usize,
 }
 
-pub fn main(data_file: &str) {
-    let res = process(read_lines(data_file));
-    println!("res = {}", res);
-}
-
-fn process(lines: impl Iterator<Item = String>) -> usize {
+pub fn process(lines: impl Iterator<Item = String>) -> usize {
     let map = collect_data(lines);
     let antinodes = get_antinodes(&map);
 
@@ -102,9 +97,10 @@ fn get_antinode(freq1: Location, freq2: Location, cols: usize, rows: usize) -> V
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::data::*;
 
     #[test]
-    fn test_process() {
+    fn test_example() {
         let lines = indoc::indoc! {"
             ............
             ........0...
@@ -123,5 +119,10 @@ mod tests {
         .map(|l| l.to_string());
 
         assert_eq!(process(lines), 34);
+    }
+
+    #[test]
+    fn test_data() {
+        assert_eq!(process(read_lines(8)), 1235);
     }
 }
