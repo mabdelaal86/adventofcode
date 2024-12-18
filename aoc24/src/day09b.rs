@@ -1,34 +1,16 @@
 use itertools::Itertools;
 
-#[derive(Debug)]
-struct Block {
-    index: u128,
-    count: u32,
-    is_space: bool,
+enum Block {
+    File(u32, u128),
+    Space(u32),
 }
 
 impl Block {
-    fn new(index: usize, count: u32) -> Self {
-        Self {
-            index: (index / 2) as u128,
-            count,
-            is_space: index % 2 == 1,
-        }
-    }
-
-    fn space(count: u32) -> Self {
-        Self {
-            index: 0,
-            count,
-            is_space: true,
-        }
-    }
-
-    fn value(&self) -> u128 {
-        if self.is_space {
-            0
+    fn new(count: u32, index: usize) -> Self {
+        if index % 2 == 0 {
+            Self::File(count, (index / 2) as u128)
         } else {
-            self.index
+            Self::Space(count)
         }
     }
 }
@@ -37,17 +19,21 @@ pub fn process(data: String) -> u128 {
     let mut data = data
         .char_indices()
         .map(|(i, c)| (i, c.to_digit(10).unwrap()))
-        .map(|(i, c)| Block::new(i, c))
+        .map(|(i, c)| Block::new(c, i))
         .collect_vec();
 
     let mut end: usize = data.len() - 1;
     while end > 0 {
-        if !data[end].is_space {
+        if let Block::File(file_size, _) = data[end]
+        {
             for start in 0..end {
-                if data[start].is_space && data[start].count >= data[end].count {
-                    data[start].count -= data[end].count;
+                let Block::Space(space_size) = &mut data[start] else {
+                    continue;
+                };
+                if *space_size >= file_size {
+                    *space_size -= file_size;
                     let item = data.remove(end);
-                    data.insert(end, Block::space(item.count));
+                    data.insert(end, Block::Space(file_size));
                     data.insert(start, item);
                     break;
                 }
@@ -60,9 +46,16 @@ pub fn process(data: String) -> u128 {
     let mut res: u128 = 0;
 
     for item in data {
-        for _ in 0..item.count {
-            res += block * item.value();
-            block += 1;
+        match item {
+            Block::Space(count) => {
+                block += count as u128;
+            }
+            Block::File(count, index) => {
+                for _ in 0..count {
+                    res += block * index;
+                    block += 1;
+                }
+            }
         }
     }
 
