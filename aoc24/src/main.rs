@@ -19,6 +19,7 @@ mod day08b;
 mod day09a;
 mod day09b;
 mod map;
+mod play_ground;
 
 fn main() {
     let day = std::env::args().nth(1).expect("no day given");

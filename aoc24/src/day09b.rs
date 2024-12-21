@@ -24,8 +24,7 @@ pub fn process(data: String) -> u128 {
 
     let mut end: usize = data.len() - 1;
     while end > 0 {
-        if let Block::File(file_size, _) = data[end]
-        {
+        if let Block::File(file_size, _) = data[end] {
             for start in 0..end {
                 let Block::Space(space_size) = &mut data[start] else {
                     continue;
