@@ -1,5 +1,4 @@
 use std::collections::HashSet;
-use std::num;
 
 use crate::map::*;
 
@@ -7,7 +6,7 @@ pub fn process(lines: impl Iterator<Item = String>) -> usize {
     let map = to_matrix(lines);
     let start_loc = map.find('^').expect("No starting location found");
     let mut guard = Guard::new(start_loc, '^');
-    let mut visited: HashSet<Location> = HashSet::new();
+    let mut visited: HashSet<ValidLocation> = HashSet::new();
     visited.insert(guard.location);
 
     while move_guard(&mut guard, &map) {
@@ -18,12 +17,12 @@ pub fn process(lines: impl Iterator<Item = String>) -> usize {
 }
 
 struct Guard {
-    location: Location,
+    location: ValidLocation,
     direction: char,
 }
 
 impl Guard {
-    fn new(location: Location, direction: char) -> Self {
+    fn new(location: ValidLocation, direction: char) -> Self {
         Self {
             location,
             direction,
@@ -40,7 +39,7 @@ impl Guard {
         }
     }
 
-    fn next_location(&self) -> Result<Location, num::TryFromIntError> {
+    fn next_location(&self) -> Location {
         let d = match self.direction {
             '^' => Distance::new(0, -1),
             'v' => Distance::new(0, 1),
@@ -54,12 +53,10 @@ impl Guard {
 }
 
 fn move_guard(guard: &mut Guard, map: &Matrix<char>) -> bool {
-    let Ok(new_loc) = guard.next_location() else {
+    let new_loc = guard.next_location();
+    let Some(new_loc) = map.validate_loc(&new_loc) else {
         return false;
     };
-    if new_loc.x >= map.cols() || new_loc.y >= map.rows() {
-        return false;
-    }
 
     if *map.at(&new_loc) == '#' {
         guard.turn_90();

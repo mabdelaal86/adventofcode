@@ -3,9 +3,14 @@ use std::collections::{HashMap, HashSet};
 use crate::map::*;
 
 struct Map {
-    frequencies: HashMap<char, Vec<Location>>,
+    frequencies: HashMap<char, Vec<ValidLocation>>,
     cols: usize,
     rows: usize,
+}
+
+impl MapTrait for Map {
+    fn rows(&self) -> usize { self.rows }
+    fn cols(&self) -> usize { self.cols }
 }
 
 pub fn process(lines: impl Iterator<Item = String>) -> usize {
@@ -14,12 +19,11 @@ pub fn process(lines: impl Iterator<Item = String>) -> usize {
 
     antinodes
         .iter()
-        .filter(|loc| loc.x < map.cols && loc.y < map.rows)
         .count()
 }
 
 fn collect_data(lines: impl Iterator<Item = String>) -> Map {
-    let mut frequencies: HashMap<char, Vec<Location>> = HashMap::new();
+    let mut frequencies: HashMap<char, Vec<ValidLocation>> = HashMap::new();
 
     let mut row = 0;
     let mut cols = 0;
@@ -31,7 +35,7 @@ fn collect_data(lines: impl Iterator<Item = String>) -> Map {
                 if !frequencies.contains_key(&c) {
                     frequencies.insert(c, vec![]);
                 }
-                frequencies.get_mut(&c).unwrap().push(Location::new(i, row));
+                frequencies.get_mut(&c).unwrap().push(ValidLocation::new(i, row));
             });
 
         row += 1;
@@ -45,13 +49,13 @@ fn collect_data(lines: impl Iterator<Item = String>) -> Map {
     }
 }
 
-fn get_antinodes(map: &Map) -> HashSet<Location> {
-    let mut antinodes: HashSet<Location> = HashSet::new();
+fn get_antinodes(map: &Map) -> HashSet<ValidLocation> {
+    let mut antinodes: HashSet<ValidLocation> = HashSet::new();
     for frequency in map.frequencies.values() {
         antinodes.extend(frequency);
         for i in 0..frequency.len() {
             for j in i + 1..frequency.len() {
-                get_antinode(frequency[i], frequency[j], map.cols, map.rows)
+                get_antinode(frequency[i], frequency[j], map)
                     .iter()
                     .for_each(|loc| {
                         antinodes.insert(*loc);
@@ -62,31 +66,27 @@ fn get_antinodes(map: &Map) -> HashSet<Location> {
     antinodes
 }
 
-fn get_antinode(freq1: Location, freq2: Location, cols: usize, rows: usize) -> Vec<Location> {
-    let mut res: Vec<Location> = Vec::new();
+fn get_antinode(freq1: ValidLocation, freq2: ValidLocation, map: &Map) -> Vec<ValidLocation> {
+    let mut res: Vec<ValidLocation> = Vec::new();
 
     let dis = freq2.to_i32() - freq1.to_i32();
 
     let mut i = 1;
     loop {
-        let Ok(l) = moved_by(freq1, dis * -i) else {
+        let l = moved_by(freq1, dis * -i);
+        let Some(l) = map.validate_loc(&l) else {
             break;
         };
-        if l.x >= cols || l.y >= rows {
-            break;
-        }
         res.push(l);
         i += 1;
     }
 
     i = 1;
     loop {
-        let Ok(l) = moved_by(freq2, dis * i) else {
+        let l = moved_by(freq2, dis * i);
+        let Some(l) = map.validate_loc(&l) else {
             break;
         };
-        if l.x >= cols || l.y >= rows {
-            break;
-        }
         res.push(l);
         i += 1;
     }

@@ -17,7 +17,7 @@ pub fn process(lines: impl Iterator<Item = String>) -> usize {
     matrix.indices().filter(|l| is_mas(&matrix, l)).count()
 }
 
-fn is_mas(data: &Matrix<char>, loc: &Location) -> bool {
+fn is_mas(data: &Matrix<char>, loc: &ValidLocation) -> bool {
     if *data.at(&loc) != 'A' {
         return false;
     }
@@ -28,12 +28,10 @@ fn is_mas(data: &Matrix<char>, loc: &Location) -> bool {
         .all(|ms| ms == ['M', 'S'] || ms == ['S', 'M'])
 }
 
-fn get_ms(data: &Matrix<char>, loc: &Location, dir: &[Distance; 2]) -> [char; 2] {
+fn get_ms(data: &Matrix<char>, loc: &ValidLocation, dir: &[Distance; 2]) -> [char; 2] {
     dir.map(|d| {
-        let Ok(l) = moved_by(*loc, d) else {
-            return '.';
-        };
-        if l.x >= data.cols() || l.y >= data.rows() {
+        let l = moved_by(*loc, d);
+        let Some(l) = data.validate_loc(&l) else {
             return '.';
         };
         *data.at(&l)

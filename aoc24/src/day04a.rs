@@ -19,7 +19,7 @@ pub fn process(lines: impl Iterator<Item = String>) -> u32 {
     matrix.indices().map(|l| count_word(&matrix, &l)).sum()
 }
 
-fn count_word(data: &Matrix<char>, loc: &Location) -> u32 {
+fn count_word(data: &Matrix<char>, loc: &ValidLocation) -> u32 {
     if data.at(loc) != &WORD[0] {
         return 0;
     }
@@ -31,10 +31,8 @@ fn count_word(data: &Matrix<char>, loc: &Location) -> u32 {
         .sum()
 }
 
-fn is_xmas(data: &Matrix<char>, loc: &Location, i: usize, dir: Distance) -> bool {
-    let Ok(loc) = moved_by(*loc, dir * i as i32) else {
-        return false;
-    };
+fn is_xmas(data: &Matrix<char>, loc: &ValidLocation, i: usize, dir: Distance) -> bool {
+    let loc = moved_by(*loc, dir * i as i32);
 
     Some(&WORD[i]) == data.get(&loc)
 }

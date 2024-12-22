@@ -1,5 +1,4 @@
 use std::collections::HashSet;
-use std::num;
 
 use crate::map::*;
 
@@ -18,12 +17,12 @@ pub fn process(lines: impl Iterator<Item = String>) -> usize {
 
 #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
 struct Guard {
-    location: Location,
+    location: ValidLocation,
     direction: char,
 }
 
 impl Guard {
-    fn new(location: Location, direction: char) -> Self {
+    fn new(location: ValidLocation, direction: char) -> Self {
         Self {
             location,
             direction,
@@ -40,7 +39,7 @@ impl Guard {
         }
     }
 
-    fn next_location(&self) -> Result<Location, num::TryFromIntError> {
+    fn next_location(&self) -> Location {
         let d = match self.direction {
             '^' => Distance::new(0, -1),
             'v' => Distance::new(0, 1),
@@ -54,12 +53,10 @@ impl Guard {
 }
 
 fn move_guard(guard: &mut Guard, map: &Matrix<char>) -> bool {
-    let Ok(new_loc) = guard.next_location() else {
+    let new_loc = guard.next_location();
+    let Some(new_loc) = map.validate_loc(&new_loc) else {
         return false;
     };
-    if new_loc.x >= map.cols() || new_loc.y >= map.rows() {
-        return false;
-    }
 
     if ['#', 'O'].contains(map.at(&new_loc)) {
         guard.turn_90();
@@ -70,8 +67,8 @@ fn move_guard(guard: &mut Guard, map: &Matrix<char>) -> bool {
     true
 }
 
-fn visited_locations(map: &Matrix<char>, mut guard: &mut Guard) -> HashSet<Location> {
-    let mut visited: HashSet<Location> = HashSet::new();
+fn visited_locations(map: &Matrix<char>, mut guard: &mut Guard) -> HashSet<ValidLocation> {
+    let mut visited: HashSet<ValidLocation> = HashSet::new();
     visited.insert(guard.location);
 
     while move_guard(&mut guard, &map) {
@@ -81,7 +78,7 @@ fn visited_locations(map: &Matrix<char>, mut guard: &mut Guard) -> HashSet<Locat
     visited
 }
 
-fn can_make_loop(loc: &Location, map: &mut Matrix<char>) -> bool {
+fn can_make_loop(loc: &ValidLocation, map: &mut Matrix<char>) -> bool {
     if *map.at(&loc) == '^' {
         return false;
     }
