@@ -20,6 +20,7 @@ mod day09a;
 mod day09b;
 mod day10a;
 mod day10b;
+mod day11;
 mod map;
 mod play_ground;
 
@@ -28,11 +29,12 @@ fn main() {
     let day = day.parse::<u8>().expect("day is not a number");
 
     let part = std::env::args().nth(2).expect("no part given");
+    let part = part.chars().nth(0).unwrap();
 
     println!("Res: {}", process(day, part));
 }
 
-fn process(day: u8, part: String) -> String {
+fn process(day: u8, part: char) -> String {
     let puzzle = format!("day{:02}{}", day, part);
 
     match puzzle.as_str() {
@@ -57,6 +59,8 @@ fn process(day: u8, part: String) -> String {
         "day09b" => day09b::process(data::read_all(day)).to_string(),
         "day10a" => day10a::process(data::read_lines(day)).to_string(),
         "day10b" => day10b::process(data::read_lines(day)).to_string(),
+        "day11a" => day11::process(data::read_all(day).as_str(), 25).to_string(),
+        "day11b" => day11::process(data::read_all(day).as_str(), 75).to_string(),
         _ => panic!("unknown puzzle: {}", puzzle),
     }
 }
