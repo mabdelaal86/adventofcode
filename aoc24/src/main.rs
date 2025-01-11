@@ -18,6 +18,8 @@ mod day08a;
 mod day08b;
 mod day09a;
 mod day09b;
+mod day10a;
+mod day10b;
 mod map;
 mod play_ground;
 
@@ -53,6 +55,8 @@ fn process(day: u8, part: String) -> String {
         "day08b" => day08b::process(data::read_lines(day)).to_string(),
         "day09a" => day09a::process(data::read_all(day)).to_string(),
         "day09b" => day09b::process(data::read_all(day)).to_string(),
+        "day10a" => day10a::process(data::read_lines(day)).to_string(),
+        "day10b" => day10b::process(data::read_lines(day)).to_string(),
         _ => panic!("unknown puzzle: {}", puzzle),
     }
 }

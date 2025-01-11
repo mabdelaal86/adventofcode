@@ -9,17 +9,19 @@ struct Map {
 }
 
 impl MapTrait for Map {
-    fn rows(&self) -> usize { self.rows }
-    fn cols(&self) -> usize { self.cols }
+    fn rows(&self) -> usize {
+        self.rows
+    }
+    fn cols(&self) -> usize {
+        self.cols
+    }
 }
 
 pub fn process(lines: impl Iterator<Item = String>) -> usize {
     let map = collect_data(lines);
     let antinodes = get_antinodes(&map);
 
-    antinodes
-        .iter()
-        .count()
+    antinodes.iter().count()
 }
 
 fn collect_data(lines: impl Iterator<Item = String>) -> Map {
@@ -35,7 +37,10 @@ fn collect_data(lines: impl Iterator<Item = String>) -> Map {
                 if !frequencies.contains_key(&c) {
                     frequencies.insert(c, vec![]);
                 }
-                frequencies.get_mut(&c).unwrap().push(ValidLocation::new(i, row));
+                frequencies
+                    .get_mut(&c)
+                    .unwrap()
+                    .push(ValidLocation::new(i, row));
             });
 
         row += 1;

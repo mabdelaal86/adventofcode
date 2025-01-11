@@ -31,8 +31,12 @@ pub struct Matrix<T> {
 }
 
 impl<T> MapTrait for Matrix<T> {
-    fn rows(&self) -> usize { self.rows }
-    fn cols(&self) -> usize { self.cols }
+    fn rows(&self) -> usize {
+        self.rows
+    }
+    fn cols(&self) -> usize {
+        self.cols
+    }
 }
 
 impl<T> Matrix<T> {
@@ -56,11 +60,7 @@ impl<T> Matrix<T> {
     }
 
     pub fn indices(&self) -> impl Iterator<Item = ValidLocation> + use<'_, T> {
-        (0..self.rows).flat_map(move |r| {
-            (0..self.cols).map(move |c| {
-                ValidLocation::new(c, r)
-            })
-        })
+        (0..self.rows).flat_map(move |r| (0..self.cols).map(move |c| ValidLocation::new(c, r)))
     }
 
     pub fn find(&self, value: T) -> Option<ValidLocation>
@@ -68,6 +68,13 @@ impl<T> Matrix<T> {
         T: PartialEq,
     {
         self.indices().find(|loc| self.at(loc) == &value)
+    }
+
+    pub fn find_all(&self, value: T) -> impl Iterator<Item = ValidLocation> + use<'_, T>
+    where
+        T: PartialEq,
+    {
+        self.indices().filter(move |loc| self.at(loc) == &value)
     }
 
     // pub fn iter(&self) -> impl Iterator<Item = (usize, usize, &T)> {
