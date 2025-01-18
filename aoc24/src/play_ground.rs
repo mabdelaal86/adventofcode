@@ -36,6 +36,7 @@ impl HijriDate {
         Self { year, month, day }
     }
 
+    #[allow(dead_code)]
     fn value(&self) -> u32 {
         let year = self.year as u32;
         let month = self.month as u32;
@@ -57,6 +58,7 @@ impl fmt::Display for HijriDate {
     }
 }
 
+#[allow(dead_code)]
 fn next_month(date: &HijriDate) -> HijriDate {
     HijriDate::new(
         if date.month == 12 {
@@ -69,6 +71,7 @@ fn next_month(date: &HijriDate) -> HijriDate {
     )
 }
 
+#[allow(dead_code)]
 fn to_next_month(date: &mut HijriDate) {
     date.year = if date.month == 12 {
         date.year + 1
@@ -78,6 +81,7 @@ fn to_next_month(date: &mut HijriDate) {
     date.month = (date.month % 12) + 1;
 }
 
+#[allow(dead_code)]
 fn prev_month(date: &HijriDate) -> HijriDate {
     if date.month == 1 {
         HijriDate::new(date.year - 1, 12, date.day)

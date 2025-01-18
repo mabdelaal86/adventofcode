@@ -21,6 +21,7 @@ mod day09b;
 mod day10a;
 mod day10b;
 mod day11;
+mod day12a;
 mod map;
 mod play_ground;
 
@@ -61,6 +62,7 @@ fn process(day: u8, part: char) -> String {
         "day10b" => day10b::process(data::read_lines(day)).to_string(),
         "day11a" => day11::process(data::read_all(day).as_str(), 25).to_string(),
         "day11b" => day11::process(data::read_all(day).as_str(), 75).to_string(),
+        "day12a" => day12a::process(data::read_lines(day)).to_string(),
         _ => panic!("unknown puzzle: {}", puzzle),
     }
 }

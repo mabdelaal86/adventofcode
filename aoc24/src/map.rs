@@ -77,11 +77,11 @@ impl<T> Matrix<T> {
         self.indices().filter(move |loc| self.at(loc) == &value)
     }
 
-    // pub fn iter(&self) -> impl Iterator<Item = (usize, usize, &T)> {
-    //     (0..self.rows).flat_map(move |r| {
-    //         (0..self.cols).map(move |c| (r, c, &self.data[r][c]))
-    //     })
-    // }
+    pub fn iter(&self) -> impl Iterator<Item = (ValidLocation, &T)> {
+        (0..self.rows).flat_map(move |r| {
+            (0..self.cols).map(move |c| (ValidLocation::new(c, r), &self.data[r][c]))
+        })
+    }
 }
 
 pub fn to_matrix(lines: impl Iterator<Item = String>) -> Matrix<char> {
